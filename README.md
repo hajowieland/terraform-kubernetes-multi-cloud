@@ -27,4 +27,36 @@ This is for demonstration and/or learning purposes.
 * Outputs kubeconfig files at the end
 
 
+## Requirements
+
+You need to have an account on the cloud platforms (of course).
+
+
+### Azure
+
+Create a Service Principal:
+
+```
+az login
+az account list
+az ad sp create-for-rbac --role="Contributor"
+```
+
+appId => client_id
+
+password => client_secret
+
+tenant => tenant_id
+
+
+### Digital Ocean
+
+Create a Token four your account.
+
+
+### Google Cloud Platform
+
+You need to have a Project and a Service account in it.
+
+
 ## Runtimes
