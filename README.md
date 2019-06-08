@@ -11,12 +11,12 @@ This is for demonstration and/or learning purposes.
 
 ## Public Cloud Platforms
 
-* Amazon Web Services _"Elastic Kubernetes Engine" (EKS)_
+* ✅ Amazon Web Services _"Elastic Kubernetes Engine" (EKS)_
 * ✅ Digital Ocean _"Kubernetes"_
 * ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
 * ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
 * ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes"_
-* **SOON:** Alibaba Cloud _"Managed Kubernetes Cluster Service"_
+* **SOON:** Alibaba Cloud _"Managed Kubernetes Cluster Service"_ (when its Terraform provider is 0.12-ready)
 
 
 ## Features

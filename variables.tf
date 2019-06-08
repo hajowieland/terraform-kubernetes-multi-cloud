@@ -35,6 +35,16 @@ variable "enable_oracle" {
 }
 
 
+variable "nodes" {
+  description = "Worker nodes (e.g. `2`)"
+  default = 2
+}
+variable "cidr_block" {
+  description = "OCI VCN CIDR block (e.g. `10.0.23.0/16`)"
+  type = string
+  default = "10.0.0.0/16"
+}
+
 variable "subnets" {
   description = "List of 8-bit numbers of subnets base_cidr_block"
   default = 2
@@ -44,6 +54,9 @@ variable "lbs" {
   description = "List of 8-bit numbers of LoadBalancer base_cidr_block"
   default = 2
 }
+
+
+
 
 ## Google Cloud
 variable "gcp_project" {
@@ -75,10 +88,10 @@ variable "gke_node_type" {
   default     = "n1-standard-1"
 }
 
-variable "gke_node_count" {
-  description = "GKE number of nodes in node pool (e.g. `2`)"
-  default     = 2
-}
+# variable "gke_node_count" {
+#   description = "GKE number of nodes in node pool (e.g. `2`)"
+#   default     = 2
+# }
 
 variable "gke_serviceaccount" {
     description = "GCP service account for GKE (e.g. `default`)"
@@ -120,11 +133,11 @@ variable "aks_node_type" {
   default     = "Standard_D1_v2"
 }
 
-variable "aks_node_count" {
-  description = "AKS Agent Pool nodes (e.g. `2`)"
-  type        = string
-  default     = "2"
-}
+# variable "aks_node_count" {
+#   description = "AKS Agent Pool nodes (e.g. `2`)"
+#   type        = string
+#   default     = "2"
+# }
 
 variable "aks_node_disk_size" {
     description = "AKS Agent Pool instance disk size in GB (e.g. `30` => minimum: 30GB, maximum: 1024)"
@@ -159,11 +172,11 @@ variable "do_k8s_version" {
     default = "1.14.2-do.0"
 }
 
-variable "do_k8s_node_count" {
-  description = "Digital Ocean Kubernets nodes (e.g. `2`)"
-  type        = string
-  default     = 2
-}
+# variable "do_k8s_node_count" {
+#   description = "Digital Ocean Kubernets nodes (e.g. `2`)"
+#   type        = string
+#   default     = 2
+# }
 
 variable "do_k8s_node_type" {
   description = "Digital Ocean Kubernetse Node Plan (e.g. `s-1vcpu-2gb` => 1vCPU, 2GB RAM)"
@@ -259,11 +272,11 @@ variable "oci_vcn_cidr_prefix" {
   type = string
   default = "10.0"
 }
-variable "oci_vcn_cidr_block" {
-  description = "OCI VCN CIDR block (e.g. `10.0.23.0/16`)"
-  type = string
-  default = "10.0.0.0/16"
-}
+# variable "oci_vcn_cidr_block" {
+#   description = "OCI VCN CIDR block (e.g. `10.0.23.0/16`)"
+#   type = string
+#   default = "10.0.0.0/16"
+# }
 
 variable "oci_subnet_cidr_block" {
   description = "OCI VCN SubnetCIDR block (e.g. `10.0.23.1/24`)"
@@ -319,11 +332,11 @@ variable "oci_subnet_prohibit_public_ip_on_vnic" {
 }
 
 
-variable "oci_node_pool_quantity_per_subnet" {
-  description = "OCI Kubernetse nodes in each subnet (e.g. `2`)"
-  type        = string
-  default     = 2
-}
+# variable "oci_node_pool_quantity_per_subnet" {
+#   description = "OCI Kubernetse nodes in each subnet (e.g. `2`)"
+#   type        = string
+#   default     = 2
+# }
 
 variable "oci_node_pool_ssh_public_key" {
   description = "OCI SSH Public Key to add to each node in the node pool (e.g. `~/.ssh/id_rsa.pub`)"
@@ -345,8 +358,35 @@ variable "oci_cluster_kube_config_token_version" { default = "1.0.0" }
 
 ### Amazon
 
+variable "aws_region" {
+  description = "AWS region (e.g. `eu-central-1` => Frankfurt)"
+  type        = string
+  default     = "eu-central-1"
+}
+
+variable "aws_access_key" {
+  description = "AWS access key id (AWS_ACCESS_KEY_ID)"
+  type        = string
+  default     = ""
+}
+
+
+variable "aws_secret_access_key" {
+  description = "AWS secret access key (AWS_SECRET_ACCESS_KEY)"
+  type = string
+  default = ""
+}
+
+
 variable "aws_cluster_name" {
   description = "AWS ELS cluster name (e.g. `k8s-eks`)"
   type        = string
   default     = "k8s-eks"
 }
+
+variable "aws_instance_type" {
+  description = "AWS EC2 Instance Type (e.g. `t3.medium`)"
+  type = string
+  default = "t3.medium"
+}
+

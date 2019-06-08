@@ -14,7 +14,7 @@ provider "google" {
 provider "azurerm" {
 
   # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
-  version = ">=1.29.0"
+  version = ">=1.29"
 }
 
 # # Configure the Microsoft Azure Active Directory Provider
@@ -30,7 +30,18 @@ provider "digitalocean" {
 }
 
 
-# AWS
+## AWS
+
+# Configure the AWS Provider
+provider "aws" {
+  version = ">=2.14"
+  region  = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_access_key
+}
+
+
+## AliCloud
 
 # Configure the Alicloud Provider
 # provider "alicloud" {
@@ -45,7 +56,7 @@ provider "digitalocean" {
 # Configure the Oracle Cloud Infrastructure provider with an API Key
 provider "oci" {
   alias = "oci"
-  version = ">=3.28.2"
+  version = ">=3.28"
   tenancy_ocid = "${var.oci_tenancy_ocid}"
   user_ocid = "${var.oci_user_ocid}"
   fingerprint = "${var.oci_fingerprint}"
