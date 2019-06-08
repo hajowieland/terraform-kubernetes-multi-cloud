@@ -1,7 +1,6 @@
 provider "google" {
-  alias       = "google"
   # set envvar GOOGLE_CLOUD_KEYFILE_JSON in clie before executing
-  #credentials = file("account.json")
+  credentials = file("account.json")
   project     = var.gcp_project
   region      = var.gcp_region
 }
@@ -13,19 +12,18 @@ provider "google" {
 # ARM_ENVIRONMENT
 # (You can get them via `az account list`)
 provider "azurerm" {
-  alias = "azurerm"
 
   # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
   version = ">=1.29.0"
 }
 
-# Configure the Microsoft Azure Active Directory Provider
-provider "azuread" {
-  alias   = "azuread"
-  version = ">=0.3.0"
-}
+# # Configure the Microsoft Azure Active Directory Provider
+# provider "azuread" {
+#   alias   = "azuread"
+#   version = ">=0.3.0"
+# }
 
-# Configure the DigitalOcean Provider
+#Configure the DigitalOcean Provider
 provider "digitalocean" {
   alias = "digitalocean"
   token = var.do_token
@@ -41,3 +39,20 @@ provider "digitalocean" {
 #   secret_key = "${var.ali_secret_key}"
 #   region     = "${var.ali_region}"
 # }
+
+
+## Oracle Cloud Infrastructure
+# Configure the Oracle Cloud Infrastructure provider with an API Key
+provider "oci" {
+  alias = "oci"
+  version = ">=3.28.2"
+  tenancy_ocid = "${var.oci_tenancy_ocid}"
+  user_ocid = "${var.oci_user_ocid}"
+  fingerprint = "${var.oci_fingerprint}"
+  private_key_path = "${var.oci_private_key_path}"
+  region = "${var.oci_region}"
+}
+
+
+
+

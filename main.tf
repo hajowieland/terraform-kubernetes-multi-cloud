@@ -1,7 +1,7 @@
 ## Google Cloud Platform GKE
 
 resource "google_container_cluster" "primary" {
-  provider = google
+  count = var.enable_google ? 1 : 0
   name     = var.gke_name
   location = var.gcp_region
   project = var.gcp_project
@@ -25,11 +25,11 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
-  provider = google
+  count = var.enable_google ? 1 : 0
   project = var.gcp_project
   name       = var.gke_pool_name
   location   = var.gcp_region
-  cluster    = google_container_cluster.primary.name
+  cluster    = google_container_cluster.primary.0.name
   node_count = var.gke_node_count
 
   node_config {
@@ -49,36 +49,40 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 }
 
 data "template_file" "kubeconfig" {
+  count = var.enable_google ? 1 : 0
   template = "${file("${path.module}/gke_kubeconfig-template.yaml")}"
 
   vars = {
-    cluster_name    = "${google_container_cluster.primary.name}"
-    user_name       = "${google_container_cluster.primary.master_auth.0.username}"
-    user_password   = "${google_container_cluster.primary.master_auth.0.password}"
-    endpoint        = "${google_container_cluster.primary.endpoint}"
-    cluster_ca      = "${google_container_cluster.primary.master_auth.0.cluster_ca_certificate}"
-    client_cert     = "${google_container_cluster.primary.master_auth.0.client_certificate}"
-    client_cert_key = "${google_container_cluster.primary.master_auth.0.client_key}"
+    oci_cluster_name    = "${google_container_cluster.primary.0.name}"
+    user_name       = "${google_container_cluster.primary.0.master_auth.0.username}"
+    user_password   = "${google_container_cluster.primary.0.master_auth.0.password}"
+    endpoint        = "${google_container_cluster.primary.0.endpoint}"
+    cluster_ca      = "${google_container_cluster.primary.0.master_auth.0.cluster_ca_certificate}"
+    client_cert     = "${google_container_cluster.primary.0.master_auth.0.client_certificate}"
+    client_cert_key = "${google_container_cluster.primary.0.master_auth.0.client_key}"
   }
 }
 
 resource "local_file" "kubeconfiggke" {
-  content  = "${data.template_file.kubeconfig.rendered}"
+  count = var.enable_google ? 1 : 0
+  content  = "${data.template_file.kubeconfig.0.rendered}"
   filename = "${path.module}/kubeconfig_gke"
 }
 
 
-# Azure AKS
+# # Azure AKS
 
 resource "azurerm_resource_group" "test" {
+  count = var.enable_microsoft ? 1 : 0
   name     = "acctestRG1"
   location = var.aks_region
 }
 
 resource "azurerm_kubernetes_cluster" "test" {
+  count = var.enable_microsoft ? 1 : 0
   name                = var.aks_name
-  location            = azurerm_resource_group.test.location
-  resource_group_name = azurerm_resource_group.test.name
+  location            = azurerm_resource_group.test.0.location
+  resource_group_name = azurerm_resource_group.test.0.name
   dns_prefix          = "acctestagent1"
 
   agent_pool_profile {
@@ -100,7 +104,8 @@ resource "azurerm_kubernetes_cluster" "test" {
 }
 
 resource "local_file" "kubeconfigaks" {
-  content  = azurerm_kubernetes_cluster.test.kube_config_raw
+  count = var.enable_microsoft ? 1 : 0
+  content  = azurerm_kubernetes_cluster.test.0.kube_config_raw
   filename = "${path.module}/kubeconfig_aks"
 }
 
@@ -108,6 +113,7 @@ resource "local_file" "kubeconfigaks" {
 ## Digital Ocean Kubernetes (GA)
 
 resource "digitalocean_kubernetes_cluster" "foo" {
+  count = var.enable_digitalocean ? 1 : 0
   name    = var.do_k8s_name
   region  = var.do_region
   version = var.do_k8s_version
@@ -120,12 +126,382 @@ resource "digitalocean_kubernetes_cluster" "foo" {
 }
 
 resource "local_file" "kubeconfigdo" {
-  content  = digitalocean_kubernetes_cluster.foo.kube_config[0].raw_config
+  count = var.enable_digitalocean ? 1 : 0
+  content  = digitalocean_kubernetes_cluster.foo.0.kube_config[0].raw_config
   filename = "${path.module}/kubeconfig_do"
 }
 
 
 ## Amazon Web Services EKS
+
+# VPC
+
+# This data source is included for ease of sample architecture deployment
+# and can be swapped out as necessary.
+# data "aws_availability_zones" "available" {}
+
+# resource "aws_vpc" "demo" {
+#   cidr_block = "10.0.0.0/16"
+
+#   tags = "${
+#     map(
+#      "Name", "terraform-eks-demo-node",
+#      "kubernetes.io/cluster/${var.cluster-name}", "shared",
+#     )
+#   }"
+# }
+
+# resource "aws_subnet" "demo" {
+#   count = 2
+
+#   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
+#   cidr_block        = "10.0.${count.index}.0/24"
+#   vpc_id            = "${aws_vpc.demo.id}"
+
+#   tags = "${
+#     map(
+#      "Name", "terraform-eks-demo-node",
+#      "kubernetes.io/cluster/${var.cluster-name}", "shared",
+#     )
+#   }"
+# }
+
+# resource "aws_internet_gateway" "demo" {
+#   vpc_id = "${aws_vpc.demo.id}"
+
+#   tags = {
+#     Name = "terraform-eks-demo"
+#   }
+# }
+
+# resource "aws_route_table" "demo" {
+#   vpc_id = "${aws_vpc.demo.id}"
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = "${aws_internet_gateway.demo.id}"
+#   }
+# }
+
+# resource "aws_route_table_association" "demo" {
+#   count = 2
+
+#   subnet_id      = "${aws_subnet.demo.*.id[count.index]}"
+#   route_table_id = "${aws_route_table.demo.id}"
+# }
+
+
+# # Master IAM
+
+# resource "aws_iam_role" "demo-cluster" {
+#   name = "terraform-eks-demo-cluster"
+
+#   assume_role_policy = <<POLICY
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Principal": {
+#         "Service": "eks.amazonaws.com"
+#       },
+#       "Action": "sts:AssumeRole"
+#     }
+#   ]
+# }
+# POLICY
+# }
+
+# resource "aws_iam_role_policy_attachment" "demo-cluster-AmazonEKSClusterPolicy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+#   role       = "${aws_iam_role.demo-cluster.name}"
+# }
+
+# resource "aws_iam_role_policy_attachment" "demo-cluster-AmazonEKSServicePolicy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+#   role       = "${aws_iam_role.demo-cluster.name}"
+# }
+
+
+# # Master Security Group
+
+# resource "aws_security_group" "demo-cluster" {
+#   name        = "terraform-eks-demo-cluster"
+#   description = "Cluster communication with worker nodes"
+#   vpc_id      = "${aws_vpc.demo.id}"
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   tags = {
+#     Name = "terraform-eks-demo"
+#   }
+# }
+
+# # OPTIONAL: Allow inbound traffic from your local workstation external IP
+# #           to the Kubernetes. You will need to replace A.B.C.D below with
+# #           your real IP. Services like icanhazip.com can help you find this.
+# resource "aws_security_group_rule" "demo-cluster-ingress-workstation-https" {
+#   cidr_blocks       = ["A.B.C.D/32"]
+#   description       = "Allow workstation to communicate with the cluster API Server"
+#   from_port         = 443
+#   protocol          = "tcp"
+#   security_group_id = "${aws_security_group.demo-cluster.id}"
+#   to_port           = 443
+#   type              = "ingress"
+# }
+
+
+# # EKS Master
+
+# resource "aws_eks_cluster" "demo" {
+#   name            = "${var.cluster-name}"
+#   role_arn        = "${aws_iam_role.demo-cluster.arn}"
+
+#   vpc_config {
+#     security_group_ids = ["${aws_security_group.demo-cluster.id}"]
+#     subnet_ids         = ["${aws_subnet.demo.*.id}"]
+#   }
+
+#   depends_on = [
+#     "aws_iam_role_policy_attachment.demo-cluster-AmazonEKSClusterPolicy",
+#     "aws_iam_role_policy_attachment.demo-cluster-AmazonEKSServicePolicy",
+#   ]
+# }
+
+
+# # EKS Worker IAM
+
+# resource "aws_iam_role" "demo-node" {
+#   name = "terraform-eks-demo-node"
+
+#   assume_role_policy = <<POLICY
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Principal": {
+#         "Service": "ec2.amazonaws.com"
+#       },
+#       "Action": "sts:AssumeRole"
+#     }
+#   ]
+# }
+# POLICY
+# }
+
+# resource "aws_iam_role_policy_attachment" "demo-node-AmazonEKSWorkerNodePolicy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+#   role       = "${aws_iam_role.demo-node.name}"
+# }
+
+# resource "aws_iam_role_policy_attachment" "demo-node-AmazonEKS_CNI_Policy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+#   role       = "${aws_iam_role.demo-node.name}"
+# }
+
+# resource "aws_iam_role_policy_attachment" "demo-node-AmazonEC2ContainerRegistryReadOnly" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+#   role       = "${aws_iam_role.demo-node.name}"
+# }
+
+# resource "aws_iam_instance_profile" "demo-node" {
+#   name = "terraform-eks-demo"
+#   role = "${aws_iam_role.demo-node.name}"
+# }
+
+
+# # EKS Worker Security Groups
+
+# resource "aws_security_group" "demo-node" {
+#   name        = "terraform-eks-demo-node"
+#   description = "Security group for all nodes in the cluster"
+#   vpc_id      = "${aws_vpc.demo.id}"
+
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   tags = "${
+#     map(
+#      "Name", "terraform-eks-demo-node",
+#      "kubernetes.io/cluster/${var.cluster-name}", "owned",
+#     )
+#   }"
+# }
+
+# resource "aws_security_group_rule" "demo-node-ingress-self" {
+#   description              = "Allow node to communicate with each other"
+#   from_port                = 0
+#   protocol                 = "-1"
+#   security_group_id        = "${aws_security_group.demo-node.id}"
+#   source_security_group_id = "${aws_security_group.demo-node.id}"
+#   to_port                  = 65535
+#   type                     = "ingress"
+# }
+
+# resource "aws_security_group_rule" "demo-node-ingress-cluster" {
+#   description              = "Allow worker Kubelets and pods to receive communication from the cluster control plane"
+#   from_port                = 1025
+#   protocol                 = "tcp"
+#   security_group_id        = "${aws_security_group.demo-node.id}"
+#   source_security_group_id = "${aws_security_group.demo-cluster.id}"
+#   to_port                  = 65535
+#   type                     = "ingress"
+# }
+
+
+# # EKS Master <--> Worker Security Group
+
+# resource "aws_security_group_rule" "demo-cluster-ingress-node-https" {
+#   description              = "Allow pods to communicate with the cluster API Server"
+#   from_port                = 443
+#   protocol                 = "tcp"
+#   security_group_id        = "${aws_security_group.demo-cluster.id}"
+#   source_security_group_id = "${aws_security_group.demo-node.id}"
+#   to_port                  = 443
+#   type                     = "ingress"
+# }
+
+
+# # EKS Worker Nodes AutoScalingGroup
+
+# data "aws_ami" "eks-worker" {
+#   filter {
+#     name   = "name"
+#     values = ["amazon-eks-node-${aws_eks_cluster.demo.version}-v*"]
+#   }
+
+#   most_recent = true
+#   owners      = ["602401143452"] # Amazon EKS AMI Account ID
+# }
+
+# # This data source is included for ease of sample architecture deployment
+# # and can be swapped out as necessary.
+# data "aws_region" "current" {}
+
+# # EKS currently documents this required userdata for EKS worker nodes to
+# # properly configure Kubernetes applications on the EC2 instance.
+# # We implement a Terraform local here to simplify Base64 encoding this
+# # information into the AutoScaling Launch Configuration.
+# # More information: https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+# locals {
+#   demo-node-userdata = <<USERDATA
+# #!/bin/bash
+# set -o xtrace
+# /etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.demo.endpoint}' --b64-cluster-ca '${aws_eks_cluster.demo.certificate_authority.0.data}' '${var.cluster-name}'
+# USERDATA
+# }
+
+# resource "aws_launch_configuration" "demo" {
+#   associate_public_ip_address = true
+#   iam_instance_profile        = "${aws_iam_instance_profile.demo-node.name}"
+#   image_id                    = "${data.aws_ami.eks-worker.id}"
+#   instance_type               = "m4.large"
+#   name_prefix                 = "terraform-eks-demo"
+#   security_groups             = ["${aws_security_group.demo-node.id}"]
+#   user_data_base64            = "${base64encode(local.demo-node-userdata)}"
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+
+# resource "aws_autoscaling_group" "demo" {
+#   desired_capacity     = 2
+#   launch_configuration = "${aws_launch_configuration.demo.id}"
+#   max_size             = 2
+#   min_size             = 1
+#   name                 = "terraform-eks-demo"
+#   vpc_zone_identifier  = ["${aws_subnet.demo.*.id}"]
+
+#   tag {
+#     key                 = "Name"
+#     value               = "terraform-eks-demo"
+#     propagate_at_launch = true
+#   }
+
+#   tag {
+#     key                 = "kubernetes.io/cluster/${var.cluster-name}"
+#     value               = "owned"
+#     propagate_at_launch = true
+#   }
+# }
+
+
+# # EKS Join Worker Nodes
+
+# locals {
+#   config_map_aws_auth = <<CONFIGMAPAWSAUTH
+
+
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: aws-auth
+#   namespace: kube-system
+# data:
+#   mapRoles: |
+#     - rolearn: ${aws_iam_role.demo-node.arn}
+#       username: system:node:{{EC2PrivateDNSName}}
+#       groups:
+#         - system:bootstrappers
+#         - system:nodes
+# CONFIGMAPAWSAUTH
+# }
+
+# output "config_map_aws_auth" {
+#   value = "${local.config_map_aws_auth}"
+# }
+
+
+
+
+# # EKS kubeconf
+
+# locals {
+#   kubeconfig = <<KUBECONFIG
+
+
+# apiVersion: v1
+# clusters:
+# - cluster:
+#     server: ${aws_eks_cluster.demo.endpoint}
+#     certificate-authority-data: ${aws_eks_cluster.demo.certificate_authority.0.data}
+#   name: kubernetes
+# contexts:
+# - context:
+#     cluster: kubernetes
+#     user: aws
+#   name: aws
+# current-context: aws
+# kind: Config
+# preferences: {}
+# users:
+# - name: aws
+#   user:
+#     exec:
+#       apiVersion: client.authentication.k8s.io/v1alpha1
+#       command: aws-iam-authenticator
+#       args:
+#         - "token"
+#         - "-i"
+#         - "${var.cluster-name}"
+# KUBECONFIG
+# }
+
+# output "kubeconfig" {
+#   value = "${local.kubeconfig}"
+# }
 
 
 ## Alicloud Managed Kubernetes Service
@@ -167,3 +543,426 @@ resource "local_file" "kubeconfigdo" {
 #   worker_disk_category  = "cloud_efficiency"
 # }
 
+
+## Oracle Cloud Infrastructure Container Service for Kubernetes
+
+/**
+ * Get the avaialbility domains for this tennancy.
+ * Using any compartment id in this tennancy should also work just as well. 
+ */
+data "oci_identity_availability_domains" "ADs" {
+  count = var.enable_oracle ? 1 : 0
+  compartment_id = "${var.oci_tenancy_ocid}"
+}
+
+
+# Create random id
+resource "random_id" "vnc_dns_randid" {
+  count = var.enable_oracle ? 1 : 0
+  byte_length = 1
+}
+
+
+# Create Policy
+
+resource "oci_identity_policy" "test_policy" {
+    count = var.enable_oracle ? 1 : 0
+
+    compartment_id = "${var.oci_tenancy_ocid}"
+    description = "${var.oci_policy_description}"
+    name = "${var.oci_policy_name}"
+    statements = "${var.oci_policy_statements}"
+
+    #Optional
+    freeform_tags = {"Project"= "K8s"}
+    #version_date = "${var.policy_version_date}"
+}
+
+
+
+# Create VCN
+
+/*
+ * Create a VCN. 
+ * A DNS label with the name of the cluster is attached to the VCN.
+ * The creation of the vcn also creates the default route table, security list, and dhcp options.
+ */
+
+
+
+resource "oci_core_vcn" "oke-vcn" {
+    count = var.enable_oracle ? 1 : 0
+    cidr_block = "${var.oci_vcn_cidr_block}"
+    compartment_id = "${var.oci_tenancy_ocid}"
+
+    #Optional
+    #defined_tags = {"Operations.CostCenter"= "42"}
+    display_name = "${var.oci_cluster_name}_vcn"
+    dns_label = "${var.oci_cluster_name}vcn${random_id.vnc_dns_randid.0.dec}"
+    freeform_tags = {"Project"= "k8s"}
+}
+
+
+/*
+ * An internet gateway is created in the relevant compartment attached to the created VCN. 
+ */
+resource "oci_core_internet_gateway" "oke-igateway" {
+  count = var.enable_oracle ? 1 : 0
+  compartment_id = "${var.oci_tenancy_ocid}"
+  display_name   = "${var.oci_cluster_name}-igateway"
+  vcn_id         = "${oci_core_vcn.oke-vcn.0.id}"
+}
+
+/*
+ * Configures the default route table that was created when the VCN was created.
+ * The default route is pointed to the internet gateway that was created. 
+ */
+
+resource "oci_core_default_route_table" "oke-default-route-table" {
+  count = var.enable_oracle ? 1 : 0
+  manage_default_resource_id = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+  display_name               = "${var.oci_cluster_name}-default-route-table"
+
+  route_rules {
+    destination        = "0.0.0.0/0"
+    network_entity_id = "${oci_core_internet_gateway.oke-igateway.0.id}"
+  }
+}
+
+/*
+ * Configures the default dhcp options object that was created along with the VCN.
+ */
+resource "oci_core_default_dhcp_options" "oke-default-dhcp-options" {
+  count = var.enable_oracle ? 1 : 0
+  manage_default_resource_id = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+  display_name               = "${var.oci_cluster_name}-default-dhcp-options"
+
+  # required
+  options {
+    type        = "DomainNameServer"
+    server_type = "VcnLocalPlusInternet"
+  }
+}
+
+/*
+ * Configures the default security list.
+ */
+resource "oci_core_default_security_list" "oke-default-security-list" {
+  count = var.enable_oracle ? 1 : 0
+  manage_default_resource_id = "${oci_core_vcn.oke-vcn.0.default_security_list_id}"
+  display_name               = "${var.oci_cluster_name}-default-security-list"
+
+  // allow outbound tcp traffic on all ports
+  egress_security_rules {
+    destination = "0.0.0.0/0"
+    protocol    = "all"
+  }
+
+  // allow inbound ssh traffic
+  ingress_security_rules {
+    protocol  = "6"         // tcp
+    source    = "0.0.0.0/0"
+    stateless = false
+
+    tcp_options {
+      min = 22
+      max = 22
+    }
+  }
+
+  // allow inbound icmp traffic of a specific type
+  ingress_security_rules {
+    protocol = 1
+    source   = "0.0.0.0/0"
+
+    icmp_options {
+      type = 3
+      code = 4
+    }
+  }
+}
+
+/*
+ * Security list for the worker subnets.
+ *  - Stateless ingress/egress rule-pairs for the worker subnets. this lets traffic between the worker
+ *    nodes flow freely. Stateless rule.
+ *  - Contains a stateful rule to allow traffic to the internet - like for pulling docker images from 
+ *    DockerHub
+ *  - Conatins two ingress rules to allow SSH traffic from OCI Cluster service.
+ */
+resource "oci_core_security_list" "oke-worker-security-list" {
+  count = var.enable_oracle ? var.subnets : 0
+  compartment_id = "${var.oci_tenancy_ocid}"
+  display_name   = "${var.oci_cluster_name}-Workers-SecList"
+  vcn_id         = "${oci_core_vcn.oke-vcn.0.id}"
+
+  egress_security_rules {
+      destination = "0.0.0.0/0"
+      protocol    = "6"         // outbound TCP to the internet
+      stateless   = false
+    }
+  
+  egress_security_rules {
+      destination = cidrsubnet(var.oci_vcn_cidr_block, 8, count.index)
+      protocol    = "all"
+      stateless   = true
+    }
+
+  ingress_security_rules {
+      # Intra VCN traffic - this lets the 3 subnets in teh 3 ADs tak to each other without restriction.
+      # These are stateless, so they need to be accompanied by stateless egress rules.
+      stateless = true
+
+      protocol = "all"
+      source   = cidrsubnet(var.oci_vcn_cidr_block, 8, count.index)
+    }
+
+    ingress_security_rules {
+      # ICMP 
+      protocol = 1
+      source   = "0.0.0.0/0"
+
+      icmp_options {
+        type = 3
+        code = 4
+      }
+    }
+    ingress_security_rules {
+      # OCI Cluster service
+      protocol  = "6"             // tcp
+      source    = "130.35.0.0/16"
+      stateless = false
+
+      tcp_options {
+        min = 22
+        max = 22
+      }
+    }
+    ingress_security_rules {
+      protocol  = "6"            // tcp
+      source    = "138.1.0.0/17"
+      stateless = false
+
+      tcp_options {
+        min = 22
+        max = 22
+      }
+    }
+    # NodePort ingress rules
+    ingress_security_rules {
+      protocol  = "6"            // tcp
+      source   = "0.0.0.0/0"
+      stateless = true
+
+      tcp_options {
+        min = 30000
+        max = 32767
+      }
+    }
+    # SSH Stateful ingress rules
+    ingress_security_rules {
+      protocol  = "6"            // tcp
+      source   = "0.0.0.0/0"
+      stateless = false
+
+      tcp_options {
+        min = 22
+        max = 22
+      }
+    }
+}
+
+/*
+ * Security list for the loadbalancer subnets.
+ * - Allows all TCP traffic in/out.
+ */
+resource "oci_core_security_list" "oke-lb-security-list" {
+  count = var.enable_oracle ? 1 : 0
+  compartment_id = "${var.oci_tenancy_ocid}"
+  display_name   = "${var.oci_cluster_name}-LoadBalancers-SecList"
+  vcn_id         = "${oci_core_vcn.oke-vcn.0.id}"
+
+  egress_security_rules {
+      destination = "0.0.0.0/0"
+      protocol    = "6"
+      stateless   = true
+    }
+  ingress_security_rules {
+      protocol  = "6"
+      source    = "0.0.0.0/0"
+      stateless = true
+    }
+}
+
+/*
+ * Create the subnets. 
+ * A total of 5 Subnets are created. This is just a basic config.
+ *
+ * Worker Subnets
+ * --------------
+ * 3 Subnets are for worker nodes in the node pool. The workers are spreead across 3 availability 
+ * domains, and one subnet is created for each AD to host workers in that AD. 
+ * Obviously worker is a generic term, and assumes that the workload is homogeneous.
+ * For more realistic topologies, you may need to create additional subnets and security rules to say,
+ * separate parts of the application or certains components like a DB in to a separate subnet 
+ * with separate security lists. You can for example create subnets to host frontend pods, 
+ * middle tier pods as well as data store pods. You may want to restrict front ends to just have 
+ * access to middle tier, but not DBs.  
+ *
+ * LB subnets
+ * ----------
+ * These host the LoadBalancers. If the K8s deployment create a service of type Loadbalancer then an
+ * OCI loadbalancer is provisioned and this is placed in this subnet. The two subnet exists, because 
+ * OCI loadbalancers can provide a flaoting VIP that can move over to the second availability domain 
+ * in case the first one fails for some reason. Typical HA config.  
+ *
+ */
+
+resource "oci_core_subnet" "oke-subnet-worker" {
+  count = var.enable_oracle ? var.subnets : 0
+  availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0],"name")}"
+  #cidr_block          = "${var.oci_vcn_cidr_prefix}.10.0/24"
+  cidr_block          = cidrsubnet(var.oci_vcn_cidr_block, 8, count.index)
+  display_name        = "${var.oci_cluster_name}-WorkerSubnet${count.index}"
+  dns_label           = "workers${count.index}"
+  compartment_id       = "${var.oci_tenancy_ocid}"
+  vcn_id              = "${oci_core_vcn.oke-vcn.0.id}"
+  security_list_ids   = ["${oci_core_security_list.oke-worker-security-list.0.id}"]
+  route_table_id      = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+  dhcp_options_id     = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+}
+
+# resource "oci_core_subnet" "oke-subnet-worker-2" {
+#   count = var.enable_oracle ? 1 : 0
+#   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[1],"name")}"
+#   cidr_block          = "${var.oci_vcn_cidr_prefix}.11.0/24"
+#   display_name        = "${var.oci_cluster_name}-WorkerSubnet02"
+#   dns_label           = "workers02"
+#   compartment_id       = "${var.oci_tenancy_ocid}"
+#   vcn_id              = "${oci_core_vcn.oke-vcn.0.id}"
+#   security_list_ids   = ["${oci_core_security_list.oke-worker-security-list.0.id}"]
+#   route_table_id      = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+#   dhcp_options_id     = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+# }
+
+resource "oci_core_subnet" "oke-subnet-loadbalancer" {
+  count = var.enable_oracle ? 2 : 0
+  availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0],"name")}"
+  #cidr_block          = "${var.oci_vcn_cidr_prefix}.20.0/24"
+  cidr_block          = cidrsubnet(var.oci_vcn_cidr_block, 8, count.index)
+  display_name        = "${var.oci_cluster_name}-LB-Subnet${count.index}"
+  dns_label           = "lb${count.index}"
+  compartment_id      = "${var.oci_tenancy_ocid}"
+  vcn_id              = "${oci_core_vcn.oke-vcn.0.id}"
+  security_list_ids   = ["${oci_core_security_list.oke-lb-security-list.0.id}"]
+  route_table_id      = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+  dhcp_options_id     = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+}
+
+# resource "oci_core_subnet" "oke-subnet-loadbalancer-2" {
+#   count = var.enable_oracle ? 1 : 0
+#   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[1],"name")}"
+#   cidr_block          = "${var.oci_vcn_cidr_prefix}.21.0/24"
+#   display_name        = "${var.oci_cluster_name}-LB-Subnet02"
+#   dns_label           = "lb02"
+#   compartment_id      = "${var.oci_tenancy_ocid}"
+#   vcn_id              = "${oci_core_vcn.oke-vcn.0.id}"
+#   security_list_ids   = ["${oci_core_security_list.oke-lb-security-list.0.id}"]
+#   route_table_id      = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+#   dhcp_options_id     = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+# }
+
+# resource "oci_core_subnet" "oke-subnet-loadbalancer-1" {
+#   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
+#   cidr_block          = "${var.oci_vcn_cidr_prefix}.20.0/24"
+#   display_name        = "${var.oci_cluster_name}-LB-Subnet01"
+#   dns_label           = "lb01"
+#   compartment_id      = "${var.oci_tenancy_ocid}"
+#   vcn_id              = "${oci_core_vcn.oke-vcn.0.id}"
+#   security_list_ids   = ["${oci_core_security_list.oke-lb-security-list.id}"]
+#   route_table_id      = "${oci_core_vcn.oke-vcn.0.default_route_table_id}"
+#   dhcp_options_id     = "${oci_core_vcn.oke-vcn.0.default_dhcp_options_id}"
+# }
+
+
+# # Create VCN subnets
+# resource "oci_core_subnet" "test_subnet" {
+#     #Required
+#     cidr_block = "${var.oci_subnet_cidr_block}"
+#     compartment_id = "${var.oci_tenancy_ocid}"
+#     vcn_id = "${oci_core_vcn.oke-vcn.0.id}"
+
+#     #Optional
+#     #availability_domain = "${data.oci_identity_availability_domains.ads.0.id}"
+#     display_name = "${var.oci_cluster_name}-WorkerSubnet01"
+#     dns_label = "workers01"
+#     freeform_tags = {"Project"= "K8s"}
+#     prohibit_public_ip_on_vnic = "${var.oci_subnet_prohibit_public_ip_on_vnic}"
+#     #route_table_id = "${oci_core_route_table.test_route_table.id}"
+#     #security_list_ids = "${var.subnet_security_list_ids}"
+# }
+
+
+
+# Create Kubernetes Cluster
+resource "oci_containerengine_cluster" "test_cluster" {
+    count = var.enable_oracle ? 1 : 0
+    compartment_id = "${var.oci_tenancy_ocid}"
+    kubernetes_version = "${var.oci_cluster_kubernetes_version}"
+    name = "${var.oci_cluster_name}"
+    vcn_id = "${oci_core_vcn.oke-vcn.0.id}"
+
+    #Optional
+    options {
+      #service_lb_subnet_ids = ["${oci_core_subnet.oke-subnet-loadbalancer-1.0.id}", "${oci_core_subnet.oke-subnet-loadbalancer-2.0.id}"]
+      service_lb_subnet_ids = [
+        for subnet in oci_core_subnet.oke-subnet-loadbalancer.*.id :
+        subnet
+      ]
+        #Optional
+        add_ons {
+
+            #Optional
+            is_kubernetes_dashboard_enabled = "${var.oci_cluster_options_add_ons_is_kubernetes_dashboard_enabled}"
+            is_tiller_enabled = "${var.oci_cluster_options_add_ons_is_tiller_enabled}"
+        }
+    }
+}
+
+
+# Create Kubernetes Node Pool
+resource "oci_containerengine_node_pool" "test_node_pool" {
+    count = var.enable_oracle ? 1 : 0
+    #Required
+    cluster_id = "${oci_containerengine_cluster.test_cluster.0.id}"
+    compartment_id = "${var.oci_tenancy_ocid}"
+    kubernetes_version = "${var.oci_cluster_kubernetes_version}"
+    name = "${var.oci_node_pool_name}"
+    node_image_name = "${var.oci_node_pool_node_image_name}"
+    node_shape = "${var.oci_node_pool_node_shape}"
+    subnet_ids = "${oci_core_subnet.oke-subnet-worker.*.id}"
+
+    #Optional
+    #node_image_name = "${var.node_pool_node_image_name}"
+    #initial_node_labels {
+
+        #Optional
+        #key = "${var.node_pool_initial_node_labels_key}"
+        #value = "${var.node_pool_initial_node_labels_value}"
+    #}
+    #node_metadata = "${var.oci_node_pool_node_metadata}"
+    quantity_per_subnet = "${var.oci_node_pool_quantity_per_subnet}"
+    #ssh_public_key = "${file(var.oci_node_pool_ssh_public_key)}"
+}
+
+# data "oci_containerengine_cluster_kube_config" "tfsample_cluster_kube_config" {
+#   count = var.enable_oracle ? 1 : 0
+#   #Required
+#   cluster_id = "${oci_containerengine_cluster.test_cluster.0.id}"
+# }
+
+# resource "local_file" "kubeconfigoci" {
+#   count = var.enable_oracle ? 1 : 0
+#   content     = "${data.oci_containerengine_cluster_kube_config.tfsample_cluster_kube_config.0.content}"
+#   filename = "${path.module}/kubeconfig_oci"
+# }
