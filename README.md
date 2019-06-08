@@ -5,7 +5,7 @@ Terraform code for creating a handful of simple managed Kubernetes clusters on m
 _Managed_ in this context means the master nodes are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
 
-This is for demonstration and/or learning purposes. 
+This is for demonstration and/or learning purposes and is not production-ready.
 **Please do not use this in production !**
 
 
@@ -21,11 +21,13 @@ This is for demonstration and/or learning purposes.
 
 ## Features
 
+* Fully working K8s Clusters
 * By default creates only the minimum configuration neccessary
+* Outputs kubeconfig files at the end
 * 2 worker nodes
 * 1 vCPU
-* 2/3.75GB Memory
-* Outputs kubeconfig files at the end
+* 2/3.75/8 GB Memory (see cloud provider details down below)
+
 
 
 ## Requirements
