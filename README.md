@@ -5,7 +5,9 @@ Terraform code for creating a handful of simple managed Kubernetes clusters on m
 _Managed_ in this context means the master nodes are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
 
-This is for demonstration and/or learning purposes and is not production-ready.
+This is for demonstration and/or learning purposes.
+
+
 **Please do not use this in production !**
 
 
@@ -31,6 +33,8 @@ This is for demonstration and/or learning purposes and is not production-ready.
 
 
 ## Requirements
+
+* Terraform >= 0.12.x
 
 You need to have an account on the cloud platforms (of course).
 
@@ -102,4 +106,4 @@ Upload your Key to your account via the Console.
 Now Terraform uses this OCI credentials. If you want to configure them manually in Terraform, just uncomment the specific provider details.
 
 
-## Runtimes
+## Run times
