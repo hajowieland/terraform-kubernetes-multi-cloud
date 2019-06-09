@@ -47,12 +47,12 @@ variable "cidr_block" {
 
 variable "subnets" {
   description = "List of 8-bit numbers of subnets base_cidr_block"
-  default     = 2
+  default     = 0
 }
 
 variable "lbs" {
   description = "List of 8-bit numbers of LoadBalancer base_cidr_block"
-  default     = 2
+  default     = 10
 }
 
 
