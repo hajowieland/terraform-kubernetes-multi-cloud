@@ -34,8 +34,8 @@ provider "digitalocean" {
 
 # Configure the AWS Provider
 provider "aws" {
-  version = ">=2.14"
-  region  = var.aws_region
+  version    = ">=2.14"
+  region     = var.aws_region
   access_key = var.aws_access_key
   secret_key = var.aws_secret_access_key
 }
@@ -55,13 +55,13 @@ provider "aws" {
 ## Oracle Cloud Infrastructure
 # Configure the Oracle Cloud Infrastructure provider with an API Key
 provider "oci" {
-  alias = "oci"
-  version = ">=3.28"
-  tenancy_ocid = "${var.oci_tenancy_ocid}"
-  user_ocid = "${var.oci_user_ocid}"
-  fingerprint = "${var.oci_fingerprint}"
+  alias            = "oci"
+  version          = ">=3.28"
+  tenancy_ocid     = "${var.oci_tenancy_ocid}"
+  user_ocid        = "${var.oci_user_ocid}"
+  fingerprint      = "${var.oci_fingerprint}"
   private_key_path = "${var.oci_private_key_path}"
-  region = "${var.oci_region}"
+  region           = "${var.oci_region}"
 }
 
 
