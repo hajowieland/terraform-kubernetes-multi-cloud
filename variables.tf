@@ -136,7 +136,7 @@ variable "aks_node_type" {
 variable "aks_agent_pool_name" {
   description = "AKS Node Pool name (e.g. `k8s-aks-nodepool`)"
   type        = string
-  default     = "k8s-aks-nodepool"
+  default     = "k8snodepool"
 }
 
 
