@@ -63,7 +63,7 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/gke_kubeconfig-template.yaml")}"
 
   vars = {
-    oci_cluster_name = google_container_cluster.primary.0.name
+    cluster_name = google_container_cluster.primary.0.name
     user_name        = google_container_cluster.primary.0.master_auth.0.username
     user_password    = google_container_cluster.primary.0.master_auth.0.password
     endpoint         = google_container_cluster.primary.0.endpoint
