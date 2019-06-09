@@ -297,7 +297,7 @@ resource "aws_eks_cluster" "demo" {
 
   vpc_config {
     security_group_ids = ["${aws_security_group.demo-cluster.0.id}"]
-    subnet_ids = aws_subnet.demo.*.id
+    subnet_ids = "${aws_subnet.demo[*].id}"
   }
 
   depends_on = [
@@ -464,7 +464,7 @@ resource "aws_autoscaling_group" "demo" {
   max_size = var.nodes
   min_size = 1
   name = "terraform-eks"
-  vpc_zone_identifier = ["${aws_subnet.demo.0.id}"]
+  vpc_zone_identifier = aws_subnet.demo.*.id
 
   tag {
     key = "Name"
@@ -865,7 +865,7 @@ resource "oci_core_subnet" "oke-subnet-worker" {
   count = var.enable_oracle ? var.subnets : 0
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0], "name")}"
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.10.0/24"
-  cidr_block = cidrsubnet(var.cidr_block, 8, count.index)
+  cidr_block = cidrsubnet(var.cidr_block, 8, var.subnets + count.index)
   display_name = "${var.oci_cluster_name}-WorkerSubnet${count.index}"
   dns_label = "workers${count.index}"
   compartment_id = var.oci_tenancy_ocid
@@ -879,7 +879,7 @@ resource "oci_core_subnet" "oke-subnet-loadbalancer" {
   count = var.enable_oracle ? 2 : 0
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.0.availability_domains[0], "name")}"
   #cidr_block          = "${var.oci_vcn_cidr_prefix}.20.0/24"
-  cidr_block = cidrsubnet(var.cidr_block, 8, count.index)
+  cidr_block = cidrsubnet(var.cidr_block, 8, var.lbs + count.index)
   display_name = "${var.oci_cluster_name}-LB-Subnet${count.index}"
   dns_label = "lb${count.index}"
   compartment_id = var.oci_tenancy_ocid
