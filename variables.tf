@@ -47,7 +47,7 @@ variable "cidr_block" {
 
 variable "subnets" {
   description = "List of 8-bit numbers of subnets base_cidr_block"
-  default     = 0
+  default     = 2
 }
 
 variable "lbs" {
@@ -369,6 +369,12 @@ variable "aws_region" {
   description = "AWS region (e.g. `eu-central-1` => Frankfurt)"
   type        = string
   default     = "eu-central-1"
+}
+
+variable "aws_profile" {
+  description = "AWS cli profile (e.g. `default`)"
+  type = string
+  default = "default"
 }
 
 variable "aws_access_key" {
