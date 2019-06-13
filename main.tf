@@ -158,6 +158,18 @@ locals {
 # and can be swapped out as necessary.
 data "aws_availability_zones" "available" {}
 data "aws_region" "current" {}
+data "aws_ami" "eks-worker" {
+  count = var.enable_amazon ? 1 : 0
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${aws_eks_cluster.demo.0.version}-v*"]
+  }
+
+  most_recent = true
+  owners      = ["602401143452"] # Amazon EKS AMI Account ID
+}
+
+
 
 # VPC
 resource "aws_vpc" "demo" {
@@ -297,7 +309,7 @@ resource "aws_eks_cluster" "demo" {
 
   vpc_config {
     security_group_ids = ["${aws_security_group.demo-cluster.0.id}"]
-    subnet_ids = "${aws_subnet.demo[*].id}"
+    subnet_ids = flatten(["${aws_subnet.demo[*].id}"])
   }
 
   depends_on = [
@@ -415,17 +427,6 @@ resource "aws_security_group_rule" "demo-cluster-ingress-node-https" {
 
 
 # EKS Worker Nodes AutoScalingGroup
-data "aws_ami" "eks-worker" {
-  count = var.enable_amazon ? 1 : 0
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${aws_eks_cluster.demo.0.version}-v*"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452"] # Amazon EKS AMI Account ID
-}
-
 
 
 # EKS currently documents this required userdata for EKS worker nodes to
@@ -537,20 +538,27 @@ resource "local_file" "kubeconfigaws" {
   count = var.enable_google ? 1 : 0
   content = local.config_map_aws_auth
   filename = "${path.module}/kubeconfig_aws"
+
+  depends_on = [aws_eks_cluster.demo]
 }
 
 resource "local_file" "eks_config_map_aws_auth" {
   count = var.enable_google ? 1 : 0
   content = local.config_map_aws_auth
   filename = "${path.module}/aws_config_map_aws_auth"
+
+  depends_on = [local_file.kubeconfigaws]
 }
 
 resource "null_resource" "apply_kube_configmap" {
   provisioner "local-exec" {
     command = "kubectl apply -f ${path.module}/aws_config_map_aws_auth"
+    environment = {
+      KUBECONFIG = "${path.module}/kubeconfig_aws"
+    }
   }
 
-  depends_on = [aws_eks_cluster.demo]
+  depends_on = [local_file.eks_config_map_aws_auth]
 }
 
 
@@ -922,7 +930,7 @@ resource "oci_containerengine_node_pool" "test_node_pool" {
   name = var.oci_node_pool_name
   node_image_name = var.oci_node_pool_node_image_name
   node_shape = var.oci_node_pool_node_shape
-  subnet_ids = oci_core_subnet.oke-subnet-worker.*.id
+  subnet_ids = oci_core_subnet.oke-subnet-worker[*].id
 
   #Optional
   #node_image_name = "${var.node_pool_node_image_name}"
