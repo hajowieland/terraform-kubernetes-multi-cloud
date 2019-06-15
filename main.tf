@@ -535,20 +535,28 @@ KUBECONFIG
 
 
 resource "local_file" "kubeconfigaws" {
-  count = var.enable_google ? 1 : 0
-  content = local.config_map_aws_auth
+  count = var.enable_amazon ? 1 : 0
+  content = local.kubeconfig
   filename = "${path.module}/kubeconfig_aws"
 
   depends_on = [aws_eks_cluster.demo]
 }
 
 resource "local_file" "eks_config_map_aws_auth" {
-  count = var.enable_google ? 1 : 0
+  count = var.enable_amazon ? 1 : 0
   content = local.config_map_aws_auth
   filename = "${path.module}/aws_config_map_aws_auth"
 
   depends_on = [local_file.kubeconfigaws]
 }
+
+resource "null_resource" "aws_iam_authenticator" {
+  provisioner "local-exec" {
+    command = "curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator; chmod +x ./aws-iam-authenticator; mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH"
+  }
+
+}
+
 
 resource "null_resource" "apply_kube_configmap" {
   provisioner "local-exec" {
@@ -558,7 +566,7 @@ resource "null_resource" "apply_kube_configmap" {
     }
   }
 
-  depends_on = [local_file.eks_config_map_aws_auth]
+  depends_on = [null_resource.aws_iam_authenticator]
 }
 
 
