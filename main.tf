@@ -156,8 +156,12 @@ locals {
 
 # This data sources are included for ease of sample architecture deployment
 # and can be swapped out as necessary.
-data "aws_availability_zones" "available" {}
-data "aws_region" "current" {}
+data "aws_availability_zones" "available" {
+  count = var.enable_amazon ? 1 : 0
+}
+data "aws_region" "current" {
+  count = var.enable_amazon ? 1 : 0
+}
 data "aws_ami" "eks-worker" {
   count = var.enable_amazon ? 1 : 0
   filter {
@@ -173,6 +177,7 @@ data "aws_ami" "eks-worker" {
 
 # VPC
 resource "aws_vpc" "demo" {
+  count = var.enable_amazon ? 1 : 0
   cidr_block = var.cidr_block
 
   tags = "${
@@ -186,9 +191,9 @@ resource "aws_vpc" "demo" {
 resource "aws_subnet" "demo" {
   count = var.enable_amazon ? var.subnets : 0
 
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  availability_zone = data.aws_availability_zones.available.*.names[count.index]
   cidr_block        = cidrsubnet(var.cidr_block, 8, count.index)
-  vpc_id            = aws_vpc.demo.id
+  vpc_id            = aws_vpc.demo.*.id
 
   tags = "${
     map(
@@ -201,7 +206,7 @@ resource "aws_subnet" "demo" {
 resource "aws_internet_gateway" "demo" {
   count = var.enable_amazon ? 1 : 0
 
-  vpc_id = aws_vpc.demo.id
+  vpc_id = aws_vpc.demo.*.id
 
   tags = {
     Name = "terraform-eks"
@@ -211,7 +216,7 @@ resource "aws_internet_gateway" "demo" {
 resource "aws_route_table" "demo" {
   count = var.enable_amazon ? 1 : 0
 
-  vpc_id = aws_vpc.demo.id
+  vpc_id = aws_vpc.demo.*.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -269,7 +274,7 @@ resource "aws_security_group" "demo-cluster" {
 
   name = "terraform-eks"
   description = "Cluster communication with worker nodes"
-  vpc_id = aws_vpc.demo.id
+  vpc_id = aws_vpc.demo.*.id
 
   egress {
     from_port = 0
@@ -373,7 +378,7 @@ resource "aws_security_group" "demo-node" {
   count       = var.enable_amazon ? 1 : 0
   name        = "terraform-eks-node"
   description = "Security group for all nodes in the cluster"
-  vpc_id      = aws_vpc.demo.id
+  vpc_id      = aws_vpc.demo.*.id
 
   egress {
     from_port   = 0
