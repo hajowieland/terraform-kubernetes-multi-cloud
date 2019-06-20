@@ -8,7 +8,7 @@ _Managed_ in this context means the master nodes are managed by the cloud platfo
 This is for demonstration and/or learning purposes.
 
 
-**Please do not use this in production !**
+ℹ️ **Please do not use this in production !** ℹ️
 
 
 ## Public Cloud Platforms
@@ -18,7 +18,7 @@ This is for demonstration and/or learning purposes.
 * ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
 * ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
 * ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes"_
-* **SOON:** Alibaba Cloud _"Managed Kubernetes Cluster Service"_ (when its Terraform provider is 0.12-ready)
+* 🔜 Alibaba Cloud _"Managed Kubernetes Cluster Service"_ (when its Terraform provider is 0.12-ready)
 
 
 ## Features
@@ -26,7 +26,7 @@ This is for demonstration and/or learning purposes.
 * Fully working K8s Clusters
 * By default creates only the minimum configuration neccessary
 * Outputs kubeconfig files at the end
-* 2 worker nodes
+* 2-3 worker nodes
 * 1 vCPU
 * 2/3.75/8 GB Memory (see cloud provider details down below)
 
@@ -113,6 +113,12 @@ Now Terraform uses this OCI credentials. If you want to configure them manually 
 real	5m52.189s
 user	0m16.896s
 sys	0m1.352s
+
+
+real    5m2.791s
+user    0m16.956s
+sys     0m1.511s
+
 
 
 #### Microsoft Azure
