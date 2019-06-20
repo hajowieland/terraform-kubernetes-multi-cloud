@@ -1,8 +1,20 @@
 ## Google Cloud Platform GKE
 
+resource "random_id" "cluster_name" {
+  byte_length = 6
+}
+
+resource "random_id" "username" {
+  byte_length = 14
+}
+
+resource "random_id" "password" {
+  byte_length = 18
+}
+
 resource "google_container_cluster" "primary" {
   count    = var.enable_google ? 1 : 0
-  name     = var.gke_name
+  name     = "${var.gke_name}-${random_id.cluster_name.hex}"
   location = var.gcp_region
   project  = var.gcp_project
 
@@ -16,11 +28,31 @@ resource "google_container_cluster" "primary" {
     service_account = var.gke_serviceaccount
   }
 
+  addons_config {
+    http_load_balancing {
+      disabled = false
+    }
+    horizontal_pod_autoscaling {
+      disabled = true
+    }
+  }
 
   # Setting an empty username and password explicitly disables basic auth
   master_auth {
-    username = ""
-    password = ""
+    username = "${random_id.username.hex}"
+    password = "${random_id.password.hex}"
+
+    client_certificate_config {
+      issue_client_certificate = true
+    }
+  }
+
+  // (Required for private cluster, optional otherwise) network (cidr) from which cluster is accessible
+  master_authorized_networks_config {
+    cidr_blocks {
+        display_name = "gke-admin"
+        cidr_block   = "${local.workstation-external-cidr}"
+    }
   }
 }
 
@@ -32,10 +64,6 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   cluster    = google_container_cluster.primary.0.name
   node_count = var.nodes
 
-
-
-
-
   node_config {
     preemptible     = true
     machine_type    = var.gke_node_type
@@ -45,10 +73,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
       disable-legacy-endpoints = "true"
     }
 
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
+    oauth_scopes = var.gke_oauth_scopes
 
     labels = {
       Project = "K8s"
@@ -58,15 +83,16 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   }
 }
 
+
 data "template_file" "kubeconfig" {
   count    = var.enable_google ? 1 : 0
   template = "${file("${path.module}/gke_kubeconfig-template.yaml")}"
 
   vars = {
     cluster_name = google_container_cluster.primary.0.name
-    user_name        = google_container_cluster.primary.0.master_auth.0.username
-    user_password    = google_container_cluster.primary.0.master_auth.0.password
     endpoint         = google_container_cluster.primary.0.endpoint
+    user_name       = "${google_container_cluster.primary.0.master_auth.0.username}"
+    user_password   = "${google_container_cluster.primary.0.master_auth.0.password}"
     cluster_ca       = google_container_cluster.primary.0.master_auth.0.cluster_ca_certificate
     client_cert      = google_container_cluster.primary.0.master_auth.0.client_certificate
     client_cert_key  = google_container_cluster.primary.0.master_auth.0.client_key
@@ -90,7 +116,7 @@ resource "azurerm_resource_group" "test" {
 
 resource "azurerm_kubernetes_cluster" "test" {
   count               = var.enable_microsoft ? 1 : 0
-  name                = var.aks_name
+  name                = "${var.aks_name}-${random_id.cluster_name.hex}"
   location            = azurerm_resource_group.test.0.location
   resource_group_name = azurerm_resource_group.test.0.name
   dns_prefix          = "k8s1"
@@ -970,4 +996,12 @@ resource "local_file" "kubeconfigoci" {
 
   content = "${data.oci_containerengine_cluster_kube_config.tfsample_cluster_kube_config.0.content}"
   filename = "${path.module}/kubeconfig_oci"
+}
+
+
+### Combine kubeconfig_* files into one kubeconfig
+resource "null_resource" "kubeconfig" {
+  provisioner "local-exec" {
+    command = "for i in $(ls kubeconfig_*); do cat $i >> kubeconfig && printf '\n---\n\n' >> kubeconfig; done"
+  }
 }
