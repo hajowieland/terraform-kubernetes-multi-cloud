@@ -106,10 +106,29 @@ Upload your Key to your account via the Console.
 Now Terraform uses this OCI credentials. If you want to configure them manually in Terraform, just uncomment the specific provider details.
 
 
+### Runtimes
+
+#### Google Cloud
+
+real	5m52.189s
+user	0m16.896s
+sys	0m1.352s
+
+
+#### Microsoft Azure
+
+~7,5min
+
+
 ### Help
 
 #### Terraform asks for Digital Ocean Token
 
-If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but Terraform still keeps asking for the token, just export it as environment variable:
+If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but Terraform still keeps asking for the token, just export it as an environment variable:
 
 `export DIGITALOCEAN_TOKEN=mytoken`
+
+
+### TODO
+
+* Apply useful RBAC defaults 
