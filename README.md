@@ -125,6 +125,11 @@ sys     0m1.511s
 
 ~7,5min
 
+real    7m27.892s
+user    0m16.949s
+sys     0m1.437s
+
+
 
 ### Help
 
@@ -139,3 +144,4 @@ If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but T
 
 * Apply useful RBAC defaults 
 * Split Terraform code into multiple modules
+* Combine multiple kubeconfig files into one
