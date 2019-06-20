@@ -25,7 +25,6 @@ provider "azurerm" {
 
 #Configure the DigitalOcean Provider
 provider "digitalocean" {
-  alias = "digitalocean"
   token = var.do_token
 }
 
