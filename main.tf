@@ -751,7 +751,7 @@ resource "oci_core_default_security_list" "oke-default-security-list" {
   // allow inbound ssh traffic
   ingress_security_rules {
     protocol = "6" // tcp
-    source = "0.0.0.0/0"
+    source = "${local.workstation-external-cidr}"
     stateless = false
 
     tcp_options {
@@ -853,7 +853,7 @@ resource "oci_core_security_list" "oke-worker-security-list" {
   # SSH Stateful ingress rules
   ingress_security_rules {
     protocol = "6" // tcp
-    source = "0.0.0.0/0"
+    source = "${local.workstation-external-cidr}"
     stateless = false
 
     tcp_options {
@@ -944,7 +944,7 @@ resource "oci_containerengine_cluster" "test_cluster" {
 
   compartment_id = var.oci_tenancy_ocid
   kubernetes_version = var.oci_cluster_kubernetes_version
-  name = var.oci_cluster_name
+  name = "${var.oci_cluster_name}-${random_id.cluster_name.hex}"
   vcn_id = oci_core_vcn.oke-vcn.0.id
 
   options {
