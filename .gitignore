@@ -46,3 +46,6 @@ aws_config_map_aws_auth
 
 # Exclude terraform.tfvars
 terraform.tfvars
+
+# Exclude aws-iam-authenticator 
+aws-iam-authenticator
