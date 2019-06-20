@@ -255,6 +255,13 @@ variable "oci_private_key_path" {
   default     = "~/.oci/oci_api_key.pem"
 }
 
+variable "oci_public_key_path" {
+  description = "OCI Public key path (e.g. `~/.oci/oci_api_key_public.pem`)"
+  type        = string
+  default     = "~/.oci/oci_api_key_public.pem"
+}
+
+
 variable "oci_policy_name" {
   description = "OCI Identitfy Policy name (e.g. `k8spolicy`)"
   type        = string
