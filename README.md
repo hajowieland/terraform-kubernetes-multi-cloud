@@ -138,3 +138,4 @@ If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but T
 ### TODO
 
 * Apply useful RBAC defaults 
+* Split Terraform code into multiple modules
