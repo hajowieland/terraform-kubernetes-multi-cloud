@@ -99,6 +99,17 @@ variable "gke_serviceaccount" {
   default     = "default"
 }
 
+variable "gke_oauth_scopes" {
+  description = "GCP OAuth scopes for GKE (https://www.terraform.io/docs/providers/google/r/container_cluster.html#oauth_scopes)"
+  type = list
+  default = [
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring"
+  ]
+}
+
 ## Azure
 
 variable "az_client_id" {
@@ -157,7 +168,7 @@ variable "aks_node_disk_size" {
 variable "do_token" {
   description = "Digital Ocean Access token"
   type        = string
-  default     = ""
+  default     = "DUMMY"
 }
 
 variable "do_region" {
