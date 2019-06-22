@@ -157,6 +157,13 @@ user    0m18.175s
 sys     0m2.082s
 
 
+#### Oracle Public Cloud
+
+real    6m23.939s
+user    0m20.157s
+sys     0m1.674s
+
+
 ### Help
 
 #### Terraform asks for Digital Ocean Token
