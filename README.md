@@ -17,7 +17,7 @@ This is for demonstration and/or learning purposes.
 * ✅ Digital Ocean _"Kubernetes"_
 * ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
 * ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
-* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes"_
+* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetess" (OKE)_
 * 🔜 Alibaba Cloud _"Managed Kubernetes Cluster Service"_ (when its Terraform provider is 0.12-ready)
 
 
@@ -179,3 +179,4 @@ If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but T
 * Split Terraform code into multiple modules
 * Combine multiple kubeconfig files into one
 * Allow K8s API access only from workstation IP
+* Fix OCI destroy dependencies
