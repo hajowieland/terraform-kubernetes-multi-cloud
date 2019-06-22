@@ -141,6 +141,14 @@ user    0m16.590s
 sys     0m1.303s
 
 
+
+#### Amazon Web Services
+
+real    10m51.788s
+user    0m18.162s
+sys     0m1.945s
+
+
 ### Help
 
 #### Terraform asks for Digital Ocean Token
@@ -155,3 +163,4 @@ If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but T
 * Apply useful RBAC defaults 
 * Split Terraform code into multiple modules
 * Combine multiple kubeconfig files into one
+* Allow K8s API access only from workstation IP
