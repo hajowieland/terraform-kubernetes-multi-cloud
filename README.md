@@ -110,6 +110,8 @@ Now Terraform uses this OCI credentials. If you want to configure them manually 
 
 #### Google Cloud
 
+~5-6min
+
 real	5m52.189s
 user	0m16.896s
 sys	0m1.352s
@@ -129,6 +131,14 @@ real    7m27.892s
 user    0m16.949s
 sys     0m1.437s
 
+
+#### Digital Ocean
+
+~5min
+
+real    4m45.802s
+user    0m16.590s
+sys     0m1.303s
 
 
 ### Help
