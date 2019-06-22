@@ -150,7 +150,7 @@ resource "local_file" "kubeconfigaks" {
 
 resource "digitalocean_kubernetes_cluster" "foo" {
   count   = var.enable_digitalocean ? 1 : 0
-  name    = var.do_k8s_name
+  name    = "${var.do_k8s_name}-${random_id.cluster_name.hex}"
   region  = var.do_region
   version = var.do_k8s_version
 
