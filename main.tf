@@ -984,6 +984,8 @@ resource "oci_containerengine_node_pool" "test_node_pool" {
   #node_metadata = "${var.oci_node_pool_node_metadata}"
   quantity_per_subnet = var.nodes
   #ssh_public_key = "${file(var.oci_node_pool_ssh_public_key)}"
+
+  depends_on = [oci_core_subnet.oke-subnet-worker]
 }
 
 data "oci_containerengine_cluster_kube_config" "tfsample_cluster_kube_config" {
@@ -998,6 +1000,28 @@ resource "local_file" "kubeconfigoci" {
   content = "${data.oci_containerengine_cluster_kube_config.tfsample_cluster_kube_config.0.content}"
   filename = "${path.module}/kubeconfig_oci"
 }
+
+###
+# Workaround to destroy cleanly with Terraform
+# Otherwise terraform destroy does not complete
+###
+
+
+#data "oci_containerengine_node_pool" "test_node_pool" {
+#    node_pool_id = "${oci_containerengine_node_pool.test_node_pool.id}"
+#}
+
+#data "oci_core_instance" "test_instance" {
+#    instance_id = "${data.oci_core_instance.test_node_pool.node.0.id}"
+#}
+
+#data "oci_core_vnic_attachments" "test_vnic_attachments" {
+#    compartment_id = var.oci_tenancy_ocid
+#
+#    instance_id = "${data.oci_core_instance.test_instance.id}"
+#}
+
+
 
 
 ### Combine kubeconfig_* files into one kubeconfig
