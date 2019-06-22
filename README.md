@@ -144,9 +144,17 @@ sys     0m1.303s
 
 #### Amazon Web Services
 
+~11min
+
 real    10m51.788s
 user    0m18.162s
 sys     0m1.945s
+
+
+
+real    11m18.775s
+user    0m18.175s
+sys     0m2.082s
 
 
 ### Help
