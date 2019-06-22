@@ -1001,8 +1001,8 @@ resource "local_file" "kubeconfigoci" {
 
 
 ### Combine kubeconfig_* files into one kubeconfig
-resource "null_resource" "kubeconfig" {
-  provisioner "local-exec" {
-    command = "for i in $(ls kubeconfig_*); do cat $i >> kubeconfig && printf '\n---\n\n' >> kubeconfig; done"
-  }
-}
+#resource "null_resource" "kubeconfig" {
+#  provisioner "local-exec" {
+#    command = "for i in $(ls kubeconfig_*); do cat $i >> kubeconfig && printf '\n---\n\n' >> kubeconfig; done"
+#  }
+#}
