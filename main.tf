@@ -185,9 +185,11 @@ locals {
 data "aws_availability_zones" "available" {
   count = var.enable_amazon ? 1 : 0
 }
+
 data "aws_region" "current" {
   count = var.enable_amazon ? 1 : 0
 }
+
 data "aws_ami" "eks-worker" {
   count = var.enable_amazon ? 1 : 0
   filter {
@@ -217,9 +219,9 @@ resource "aws_vpc" "demo" {
 resource "aws_subnet" "demo" {
   count = var.enable_amazon ? var.subnets : 0
 
-  availability_zone = data.aws_availability_zones.available.*.names[count.index]
+  availability_zone = data.aws_availability_zones.available.0.names[count.index]
   cidr_block        = cidrsubnet(var.cidr_block, 8, count.index)
-  vpc_id            = aws_vpc.demo.*.id
+  vpc_id            = aws_vpc.demo.0.id
 
   tags = "${
     map(
@@ -232,7 +234,7 @@ resource "aws_subnet" "demo" {
 resource "aws_internet_gateway" "demo" {
   count = var.enable_amazon ? 1 : 0
 
-  vpc_id = aws_vpc.demo.*.id
+  vpc_id = aws_vpc.demo.0.id
 
   tags = {
     Name = "terraform-eks"
@@ -242,7 +244,7 @@ resource "aws_internet_gateway" "demo" {
 resource "aws_route_table" "demo" {
   count = var.enable_amazon ? 1 : 0
 
-  vpc_id = aws_vpc.demo.*.id
+  vpc_id = aws_vpc.demo.0.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -300,7 +302,7 @@ resource "aws_security_group" "demo-cluster" {
 
   name = "terraform-eks"
   description = "Cluster communication with worker nodes"
-  vpc_id = aws_vpc.demo.*.id
+  vpc_id = aws_vpc.demo.0.id
 
   egress {
     from_port = 0
@@ -337,6 +339,7 @@ resource "aws_eks_cluster" "demo" {
 
   name = var.aws_cluster_name
   role_arn = aws_iam_role.demo-cluster.0.arn
+  version = var.aws_eks_version
 
   vpc_config {
     security_group_ids = ["${aws_security_group.demo-cluster.0.id}"]
@@ -404,7 +407,7 @@ resource "aws_security_group" "demo-node" {
   count       = var.enable_amazon ? 1 : 0
   name        = "terraform-eks-node"
   description = "Security group for all nodes in the cluster"
-  vpc_id      = aws_vpc.demo.*.id
+  vpc_id      = aws_vpc.demo.0.id
 
   egress {
     from_port   = 0
@@ -519,7 +522,6 @@ locals {
   count = var.enable_amazon ? 1 : 0
   config_map_aws_auth = <<CONFIGMAPAWSAUTH
 
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -535,7 +537,6 @@ data:
 CONFIGMAPAWSAUTH
 
   kubeconfig = <<KUBECONFIG
-
 
 apiVersion: v1
 clusters:
@@ -586,7 +587,7 @@ resource "null_resource" "aws_iam_authenticator" {
   provisioner "local-exec" {
     command = "curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator; chmod +x ./aws-iam-authenticator; mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH"
   }
-
+  depends_on = [local_file.eks_config_map_aws_auth]
 }
 
 resource "null_resource" "apply_kube_configmap" {
