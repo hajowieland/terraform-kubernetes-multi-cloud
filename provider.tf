@@ -35,8 +35,6 @@ provider "digitalocean" {
 provider "aws" {
   version    = ">=2.14"
   region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_access_key
   profile    = var.aws_profile
 }
 

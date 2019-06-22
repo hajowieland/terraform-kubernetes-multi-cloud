@@ -395,20 +395,6 @@ variable "aws_profile" {
   default = "default"
 }
 
-variable "aws_access_key" {
-  description = "AWS access key id (AWS_ACCESS_KEY_ID)"
-  type        = string
-  default     = ""
-}
-
-
-variable "aws_secret_access_key" {
-  description = "AWS secret access key (AWS_SECRET_ACCESS_KEY)"
-  type        = string
-  default     = ""
-}
-
-
 variable "aws_cluster_name" {
   description = "AWS ELS cluster name (e.g. `k8s-eks`)"
   type        = string
@@ -419,5 +405,11 @@ variable "aws_instance_type" {
   description = "AWS EC2 Instance Type (e.g. `t3.medium`)"
   type        = string
   default     = "t3.medium"
+}
+
+variable "aws_eks_version" {
+  description = "AWS EKS cluster version (e.g. `1.13`)"
+  type = string
+  default = "1.13"
 }
 
