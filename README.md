@@ -164,6 +164,11 @@ user    0m20.157s
 sys     0m1.674s
 
 
+real    5m12.056s
+user    0m20.256s
+sys     0m1.676s
+
+
 ### Help
 
 #### Terraform asks for Digital Ocean Token
