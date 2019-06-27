@@ -7,7 +7,7 @@ resource "digitalocean_kubernetes_cluster" "foo" {
   node_pool {
     name       = var.do_k8s_pool_name
     size       = var.do_k8s_node_type
-    node_count = var.nodes
+    node_count = var.do_k8s_nodes
   }
 
   tags = [
@@ -21,7 +21,7 @@ resource "digitalocean_kubernetes_node_pool" "bar" {
 
   name       = "backend-pool"
   size       = var.do_k8s_nodepool_type
-  node_count = var.nodepool_size
+  node_count = var.do_k8s_odepool_size
   tags       = ["backend"]
 }
 
