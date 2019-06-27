@@ -18,6 +18,7 @@ module "amazon" {
   source = "./amazon"
 
   enable_amazon = var.enable_amazon
+
   workstation_ipv4 = local.workstation-external-cidr
   random_cluster_suffix = random_id.cluster_name.hex
 }
@@ -27,6 +28,7 @@ module "digitalocean" {
   source = "./digitalocean"
 
   enable_digitalocean = var.enable_digitalocean
+
   workstation_ipv4 = local.workstation-external-cidr
   random_cluster_suffix = random_id.cluster_name.hex
   do_token = var.do_token
@@ -37,6 +39,7 @@ module "google" {
   source = "./google"
 
   enable_google = var.enable_google
+
   gcp_project = var.gcp_project
   workstation_ipv4 = local.workstation-external-cidr
   random_cluster_suffix = random_id.cluster_name.hex
@@ -47,6 +50,7 @@ module "microsoft" {
   source = "./microsoft"
 
   enable_microsoft = var.enable_microsoft
+
   workstation_ipv4 = local.workstation-external-cidr
   random_cluster_suffix = random_id.cluster_name.hex
   az_tenant_id = var.az_tenant_id
@@ -59,6 +63,7 @@ module "oracle" {
   source = "./oracle"
 
   enable_oracle = var.enable_oracle
+  
   workstation_ipv4 = local.workstation-external-cidr
   random_cluster_suffix = random_id.cluster_name.hex
 
