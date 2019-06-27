@@ -12,6 +12,7 @@ locals {
   workstation-external-cidr = "${chomp(data.http.workstation-external-ip.body)}/32"
 }
 
+
 ## Amazon Web Services EKS
 module "amazon" {
   source = "./amazon"
@@ -30,7 +31,6 @@ module "digitalocean" {
   random_cluster_suffix = random_id.cluster_name.hex
   do_token = var.do_token
 }
-
 
 ## Google Cloud Platform GKE
 module "google" {
@@ -68,8 +68,11 @@ module "oracle" {
 
 }
 
+## Alicloud Managed Kubernetes Service
 
 
+# Create kubeconfig files in main module directory
+# (will be created in submodule directories, too)
 
 resource "local_file" "kubeconfigaws" {
   count = var.enable_amazon ? 1 : 0
@@ -105,27 +108,3 @@ resource "local_file" "kubeconfigoci" {
   depends_on = [module.oracle]
 }
 
-
-
-
-
-# This data sources are included for ease of sample architecture deployment
-# and can be swapped out as necessary.
-
-
-
-# Alicloud Managed Kubernetes Service
-
-
-
-
-
-
-
-
-### Combine kubeconfig_* files into one kubeconfig
-#resource "null_resource" "kubeconfig" {
-#  provisioner "local-exec" {
-#    command = "for i in $(ls kubeconfig_*); do cat $i >> kubeconfig && printf '\n---\n\n' >> kubeconfig; done"
-#  }
-#}
