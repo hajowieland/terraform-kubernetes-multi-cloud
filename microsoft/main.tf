@@ -26,7 +26,8 @@ resource "azurerm_kubernetes_cluster" "test" {
   }
 
   tags = {
-    Project = "k8s"
+    Project = "k8s",
+    ManagedBy = "terraform"
   }
 }
 
