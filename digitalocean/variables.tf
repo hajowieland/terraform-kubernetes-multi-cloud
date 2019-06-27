@@ -9,14 +9,14 @@ variable "workstation_ipv4" {
   type = string
 }
 
-variable "nodes" {
+variable "do_k8s_nodes" {
   description = "Worker nodes (e.g. `2`)"
   default     = 2
 }
 
-variable "nodepool_size" {
+variable "do_k8s_nodepool_size" {
   description = "Nodepool size (e.g. `3`)"
-  default = 3
+  default = 2
 }
 
 variable "random_cluster_suffix" {
