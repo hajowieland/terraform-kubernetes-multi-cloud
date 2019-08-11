@@ -5,9 +5,9 @@ Terraform code for creating a handful of simple managed Kubernetes clusters on m
 _Managed_ in this context means the master nodes (= control plane) are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
 
-ℹ️ This is for demonstration and/or learning purposes. ℹ️
+ℹ️  This is for demonstration and/or learning purposes.
 
-ℹ️ Please do not use this in production ℹ️
+ℹ️  Please do not use this in production.
 
 
 #### Link to my comprehensive blog post (beginner friendly):
