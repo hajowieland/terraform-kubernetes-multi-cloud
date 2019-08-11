@@ -1,7 +1,7 @@
 ## Alicloud Managed Kubernetes Service (ACK)
 module "alibaba" {
   source  = "hajowieland/k8s/alicloud"
-  version = "1.2.3"
+  version = "1.2.4"
 
   enable_alibaba = var.enable_alibaba
 
@@ -47,7 +47,7 @@ module "google" {
 ## Microsoft Azure (AKS)
 module "microsoft" {
   source  = "hajowieland/k8s/azurerm"
-  version = "1.0.3"
+  version = "1.0.4"
 
   enable_microsoft = var.enable_microsoft
 
