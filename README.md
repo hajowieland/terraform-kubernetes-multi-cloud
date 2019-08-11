@@ -12,7 +12,7 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 
 #### Link to my comprehensive blog post (beginner friendly):
 
-[https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/](https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/)
+🔗 [https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/](https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/)
 
 
 ## TOC
