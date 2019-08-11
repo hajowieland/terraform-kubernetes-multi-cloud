@@ -9,6 +9,13 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 
 ℹ️ **Please do not use this in production** ℹ️
 
+- [Terraform Kubernetes Multi-Cloud](#Terraform-Kubernetes-Multi-Cloud)
+  - [Public Cloud Platforms](#Public-Cloud-Platforms)
+  - [Features](#Features)
+  - [Requirements](#Requirements)
+  - [Terraform Inputs](#Terraform-Inputs)
+  - [TODO](#TODO)
+
 
 ## Public Cloud Platforms
 
@@ -19,13 +26,6 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 * ✅ Microsoft Azure _"Azure Kubernets Service"_ **(AKS)**
 * ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes"_ **(OKE)**
 * 🔜 IBM Cloud _Kubernetes Service"_ **(IKS)** ([when their Terraform provider is 0.12-ready](https://github.com/IBM-Cloud/terraform-provider-ibm/pull/423))
-
-
-- [Terraform Kubernetes Multi-Cloud](#Terraform-Kubernetes-Multi-Cloud)
-    - [Features](#Features)
-  - [Requirements](#Requirements)
-  - [Terraform Inputs](#Terraform-Inputs)
-  - [TODO](#TODO)
 
 
 ## Features
