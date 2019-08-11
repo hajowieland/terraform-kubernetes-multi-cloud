@@ -1,12 +1,3 @@
-## Amazon Web Services (EKS)
-module "amazon" {
-  source  = "hajowieland/k8s/aws"
-  version = "1.0.2"
-
-  enable_amazon = var.enable_amazon
-
-}
-
 ## Alicloud Managed Kubernetes Service (ACK)
 module "alibaba" {
   source  = "hajowieland/k8s/alicloud"
@@ -18,6 +9,15 @@ module "alibaba" {
   ali_secret_key = var.ali_secret_key
 
   ack_node_count = var.nodes
+}
+
+## Amazon Web Services (EKS)
+module "amazon" {
+  source  = "hajowieland/k8s/aws"
+  version = "1.0.3"
+
+  enable_amazon = var.enable_amazon
+
 }
 
 ## Digital Ocean Kubernetes ("DOK")
@@ -35,7 +35,7 @@ module "digitalocean" {
 ## Google Cloud Platform (GKE)
 module "google" {
   source  = "hajowieland/k8s/google"
-  version = "1.1.0"
+  version = "1.1.1"
 
   enable_google = var.enable_google
 
@@ -61,7 +61,7 @@ module "microsoft" {
 ## Oracle Cloud Infrastructure Container Service for Kubernetes (OKE)
 module "oracle" {
   source  = "hajowieland/k8s/oci"
-  version = "1.0.3"
+  version = "1.0.4"
 
   enable_oracle = var.enable_oracle
 
@@ -76,20 +76,20 @@ module "oracle" {
 # Create kubeconfig files in main module directory
 # (will be created in submodule directories, too)
 
-resource "local_file" "kubeconfigaws" {
-  count    = var.enable_amazon ? 1 : 0
-  content  = module.amazon.kubeconfig_path_aws
-  filename = "${path.module}/kubeconfig_aws"
-
-  depends_on = [module.amazon]
-}
-
 resource "local_file" "kubeconfigali" {
   count    = var.enable_alibaba ? 1 : 0
   content  = module.alibaba.kubeconfig_path_ali
   filename = "${path.module}/kubeconfig_ali"
 
   depends_on = [module.alibaba]
+}
+
+resource "local_file" "kubeconfigaws" {
+  count    = var.enable_amazon ? 1 : 0
+  content  = module.amazon.kubeconfig_path_aws
+  filename = "${path.module}/kubeconfig_aws"
+
+  depends_on = [module.amazon]
 }
 
 resource "local_file" "kubeconfigdo" {
