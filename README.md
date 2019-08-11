@@ -4,20 +4,21 @@ Terraform code for creating a handful of simple managed Kubernetes clusters on m
 
 _Managed_ in this context means the master nodes (= control plane) are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
-<center>
+
 ℹ️ **This is for demonstration and/or learning purposes.** ℹ️
+
 ℹ️ **Please do not use this in production** ℹ️
-</center>
+
 
 ## Public Cloud Platforms
 
-* ✅ Alibaba Cloud _"Managed Kubernetes Cluster Service" (ACK)_
-* ✅ Amazon Web Services _"Elastic Kubernetes Engine" (EKS)_
-* ✅ Digital Ocean _"Kubernetes" (DOK)_
-* ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
-* ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
-* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes" (OKE)_
-* 🔜 IBM Cloud _Kubernetes Service" (IKS)_ ([when their Terraform provider is 0.12-ready](https://github.com/IBM-Cloud/terraform-provider-ibm/pull/423))
+* ✅ Alibaba Cloud _"Managed Kubernetes Cluster Service"_ **(ACK)**
+* ✅ Amazon Web Services _"Elastic Kubernetes Engine"_ **(EKS)**
+* ✅ Digital Ocean _"Kubernetes"_ **(DOK)**
+* ✅ Google Cloud Platform _"Google Kubernetes Engine"_ **(GKE)**
+* ✅ Microsoft Azure _"Azure Kubernets Service"_ **(AKS)**
+* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes"_ **(OKE)**
+* 🔜 IBM Cloud _Kubernetes Service"_ **(IKS)** ([when their Terraform provider is 0.12-ready](https://github.com/IBM-Cloud/terraform-provider-ibm/pull/423))
 
 
 - [Terraform Kubernetes Multi-Cloud](#Terraform-Kubernetes-Multi-Cloud)
