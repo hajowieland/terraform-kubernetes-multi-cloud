@@ -9,6 +9,13 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 
 ℹ️ **Please do not use this in production** ℹ️
 
+#### Link to my comprehensive blog post (beginner friendly)
+
+[https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/](https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/)
+
+
+## TOC
+
 - [Terraform Kubernetes Multi-Cloud](#Terraform-Kubernetes-Multi-Cloud)
   - [Public Cloud Platforms](#Public-Cloud-Platforms)
   - [Features](#Features)
@@ -40,8 +47,7 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 ## Requirements
 
 * Terraform >= 0.12.x
-
-You need to have an account on the cloud platforms (of course).
+* You need to have an account on the cloud platforms (of course).
 
 
 ## Terraform Inputs
