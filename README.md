@@ -5,11 +5,12 @@ Terraform code for creating a handful of simple managed Kubernetes clusters on m
 _Managed_ in this context means the master nodes (= control plane) are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
 
-ℹ️ **This is for demonstration and/or learning purposes.** ℹ️
+ℹ️ This is for demonstration and/or learning purposes. ℹ️
 
-ℹ️ **Please do not use this in production** ℹ️
+ℹ️ Please do not use this in production ℹ️
 
-#### Link to my comprehensive blog post (beginner friendly)
+
+#### Link to my comprehensive blog post (beginner friendly):
 
 [https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/](https://napo.io/posts/terraform-kubernetes-multi-cloud-ack-aks-dok-eks-gke-oke/)
 
@@ -74,7 +75,7 @@ _Managed_ in this context means the master nodes (= control plane) are managed b
 | oci_fingerprint | OCI SSH public key fingerprint | string |  | yes |
 
 
-### TODO
+## TODO
 
 * Combine multiple kubeconfig files into one
 * _(partly implemented):_ Allow K8s API access only from workstation IP 
