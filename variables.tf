@@ -1,35 +1,35 @@
 variable "enable_google" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable Google"
   type        = bool
   default     = false
 }
 
 variable "enable_microsoft" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable Microsoft"
   type        = bool
   default     = false
 }
 
 variable "enable_alibaba" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable Alibaba"
   type        = bool
   default     = false
 }
 
 variable "enable_digitalocean" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable DigitalOcean"
   type        = bool
   default     = false
 }
 
 variable "enable_amazon" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable Amazon"
   type        = bool
   default     = false
 }
 
 variable "enable_oracle" {
-  description = "Enable / Disable Google (e.g. `1`)"
+  description = "Enable / Disable Oracle"
   type        = bool
   default     = false
 }
@@ -40,14 +40,24 @@ variable "nodes" {
   default     = 2
 }
 
+variable "ali_access_key" {
+  description = "Alibaba Cloud access key"
+  type        = string
+  default     = ""
+}
 
-
+variable "ali_secret_key" {
+  description = "Alibaba Cloud secret key"
+  type        = string
+  default     = ""
+}
 
 
 ## Google Cloud
 variable "gcp_project" {
   description = "GCP Project ID"
   type        = string
+  default     = ""
 }
 
 variable "gcp_region" {
@@ -63,16 +73,19 @@ variable "gcp_region" {
 variable "az_client_id" {
   description = "Azure Service Principal appId"
   type        = string
+  default     = ""
 }
 
 variable "az_client_secret" {
   description = "Azure Service Principal password"
   type        = string
+  default     = ""
 }
 
 variable "az_tenant_id" {
   description = "Azure Service Principal tenant"
   type        = string
+  default     = ""
 }
 
 # variable "aks_node_count" {
@@ -88,7 +101,7 @@ variable "az_tenant_id" {
 variable "do_token" {
   description = "Digital Ocean Access token"
   type        = string
-  default     = "DUMMY"
+  default     = ""
 }
 
 ## Alibaba Cloud
@@ -101,16 +114,19 @@ variable "do_token" {
 variable "oci_user_ocid" {
   description = "OCI User OCID"
   type        = string
+  default     = ""
 }
 
 variable "oci_tenancy_ocid" {
   description = "OCI Tenancy OCID"
   type        = string
+  default     = ""
 }
 
 variable "oci_fingerprint" {
   description = "OCI SSH key fingerprint"
   type        = string
+  default     = ""
 }
 
 ### Amazon
@@ -123,8 +139,8 @@ variable "aws_region" {
 
 variable "aws_profile" {
   description = "AWS cli profile (e.g. `default`)"
-  type = string
-  default = "default"
+  type        = string
+  default     = "default"
 }
 
 
