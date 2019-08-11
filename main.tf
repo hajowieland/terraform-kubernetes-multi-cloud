@@ -1,7 +1,6 @@
 ## Alicloud Managed Kubernetes Service (ACK)
 module "alibaba" {
   source  = "hajowieland/k8s/alicloud"
-  version = "1.2.4"
 
   enable_alibaba = var.enable_alibaba
 
@@ -14,7 +13,6 @@ module "alibaba" {
 ## Amazon Web Services (EKS)
 module "amazon" {
   source  = "hajowieland/k8s/aws"
-  version = "1.0.3"
 
   enable_amazon = var.enable_amazon
 
@@ -23,7 +21,6 @@ module "amazon" {
 ## Digital Ocean Kubernetes ("DOK")
 module "digitalocean" {
   source  = "hajowieland/k8s/digitalocean"
-  version = "1.0.3"
 
   enable_digitalocean = var.enable_digitalocean
 
@@ -35,7 +32,6 @@ module "digitalocean" {
 ## Google Cloud Platform (GKE)
 module "google" {
   source  = "hajowieland/k8s/google"
-  version = "1.1.1"
 
   enable_google = var.enable_google
 
@@ -47,7 +43,6 @@ module "google" {
 ## Microsoft Azure (AKS)
 module "microsoft" {
   source  = "hajowieland/k8s/azurerm"
-  version = "1.0.4"
 
   enable_microsoft = var.enable_microsoft
 
@@ -61,7 +56,6 @@ module "microsoft" {
 ## Oracle Cloud Infrastructure Container Service for Kubernetes (OKE)
 module "oracle" {
   source  = "hajowieland/k8s/oci"
-  version = "1.0.4"
 
   enable_oracle = var.enable_oracle
 
