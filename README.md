@@ -2,7 +2,7 @@
 
 Terraform code for creating a handful of simple managed Kubernetes clusters on multiple public cloud platforms.
 
-_Managed_ in this context means the master nodes are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
+_Managed_ in this context means the master nodes (= control plane) are managed by the cloud platform provider. We only create the service, the worker nodes and the bare minimum of everything else to get a working K8s cluster.
 
 
 This is for demonstration and/or learning purposes.
@@ -13,13 +13,21 @@ This is for demonstration and/or learning purposes.
 
 ## Public Cloud Platforms
 
-* ✅ Alibaba Cloud _"Managed Kubernetes Cluster Service"_
+* ✅ Alibaba Cloud _"Managed Kubernetes Cluster Service" (ACK)_
 * ✅ Amazon Web Services _"Elastic Kubernetes Engine" (EKS)_
-* ✅ Digital Ocean _"Kubernetes"_
+* ✅ Digital Ocean _"Kubernetes" (DOK)_
 * ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
 * ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
-* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetess" (OKE)_
-* 🔜 IBM Cloud _Kubernetes Service" (IKS)_ (when its Terraform provider is 0.12-ready)
+* ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetes" (OKE)_
+* 🔜 IBM Cloud _Kubernetes Service" (IKS)_ ([when their Terraform provider is 0.12-ready](https://github.com/IBM-Cloud/terraform-provider-ibm/pull/423))
+
+
+- [Terraform Kubernetes Multi-Cloud](#Terraform-Kubernetes-Multi-Cloud)
+    - [Features](#Features)
+  - [Requirements](#Requirements)
+  - [Terraform Inputs](#Terraform-Inputs)
+  - [TODO](#TODO)
+
 
 ## Features
 
@@ -59,14 +67,6 @@ You need to have an account on the cloud platforms (of course).
 | oci_user_ocid | OCI User OCID | string |  | yes |
 | oci_tenancy_ocid | OCI Tenancy OCID | string |  | yes |
 | oci_fingerprint | OCI SSH public key fingerprint | string |  | yes |
-
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| kubeconfig_path_do | Kubernetes kubeconfig file |
-
 
 
 ### TODO
