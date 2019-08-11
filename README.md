@@ -13,23 +13,21 @@ This is for demonstration and/or learning purposes.
 
 ## Public Cloud Platforms
 
+* ✅ Alibaba Cloud _"Managed Kubernetes Cluster Service"_
 * ✅ Amazon Web Services _"Elastic Kubernetes Engine" (EKS)_
 * ✅ Digital Ocean _"Kubernetes"_
 * ✅ Google Cloud Platform _"Google Kubernetes Engine" (GKE)_
 * ✅ Microsoft Azure _"Azure Kubernets Service" (AKS)_
 * ✅ Oracle Cloud Infrastructure _"Container Engine for Kubernetess" (OKE)_
-* 🔜 Alibaba Cloud _"Managed Kubernetes Cluster Service"_ (when its Terraform provider is 0.12-ready)
-
+* 🔜 IBM Cloud _Kubernetes Service" (IKS)_ (when its Terraform provider is 0.12-ready)
 
 ## Features
 
 * Fully working K8s Clusters
-* By default creates only the minimum configuration neccessary
-* Outputs kubeconfig files at the end
+* Terraform 0.12 code
+* By default creates small node configurations (low costs!)
+* Outputs ready-to-use kubeconfig files at the end
 * 2-3 worker nodes
-* 1 vCPU
-* 2/3.75/8 GB Memory (see cloud provider details down below)
-
 
 
 ## Requirements
@@ -38,150 +36,41 @@ This is for demonstration and/or learning purposes.
 
 You need to have an account on the cloud platforms (of course).
 
-Set this variables (e.g. in your local terraform.tfvars file):
 
-```
-gcp_project = "<gcp project id>"
-gke_serviceaccount = "<gke serviceaccount to use"
-# gcp_region = "<gcp region>"
-do_token = "<digitalocean token"
-# do_region = "<digitalocean region>"
-az_client_id = "<azure appId>"
-az_client_secret = "<azure password>"
-az_tenant_id = "<azure tenant>"
-# aks_region "<azure region>"
-# ali_acccess_key = "<alicloud access_key>"
-# ali_secret_key = "<alicloud secret_key>"
-# ali_region = "<alicloud region>"
-oci_tenancy_ocid = "<oci tenancy ocid>"
-oci_user_ocid = "<oci user ocid>"
-oci_fingerprint = "<oci ssh key fingerprint>"
-# oci_region = "<oci region>"
-```
+## Terraform Inputs
 
-### Azure
-
-Create a Service Principal:
-
-```
-az login
-az account list
-az ad sp create-for-rbac --role="Contributor"
-```
-
-appId => client_id
-
-password => client_secret
-
-tenant => tenant_id
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| enable_alibaba | Enable / Disable Alibaba | bool | false | yes |
+| enable_amazon | Enable / Disable Amazon | bool | false | yes |
+| enable_digitalocean | Enable / Disable DigitalOcean | bool | false | yes |
+| enable_google | Enable / Disable Google | bool | false | yes |
+| enable_microsoft | Enable / Disable Microsoft | bool | false | yes |
+| enable_oracle | Enable / Disable Oracle | bool | false | yes |
+| nodes | Kubernetes worker nodes (e.g. `2`) | number | 2 | no |
+| ali_access_key | Alibaba Cloud AccessKey ID | string |  | yes |
+| ali_secret_key | Alibaba Cloud Access Key Secret | string |  | yes |
+| aws_profile | AWS cli profile (e.g. `default`) | string | default | yes |
+| gcp_project | GCP Project ID | string |  | yes |
+| az_client_id | Azure Service Principal appId | string |  | yes |
+| az_client_secret | Azure Service Principal password | string |  | yes |
+| az_tenant_id | Azure Service Principal tenant | string |  | yes |
+| do_token | Digital Ocean personal access (API) token | string |  | yes |
+| oci_user_ocid | OCI User OCID | string |  | yes |
+| oci_tenancy_ocid | OCI Tenancy OCID | string |  | yes |
+| oci_fingerprint | OCI SSH public key fingerprint | string |  | yes |
 
 
-### Digital Ocean
+## Outputs
 
-Create a Token four your account.
+| Name | Description |
+|------|-------------|
+| kubeconfig_path_do | Kubernetes kubeconfig file |
 
-
-### Google Cloud Platform
-
-You need to have a Project and a Service account in it.
-
-
-
-### Oracle Cloud Infrastructure
-
-https://github.com/oracle/weblogic-kubernetes-operator/tree/master/kubernetes/samples/scripts/terraform
-
-
-Create an OCI account at
-
-Get your user OCI and Tenant OCI
-
-Get your SSH key fingerprint:  `openssl rsa -pubout -outform DER -in ~/.oci/oci_api_key.pem | openssl md5 -c`
-
-
-Install oci-cli and configure with `oci setup config` - fill in the details from above plus region to use.
-
-Upload your Key to your account via the Console.
-
-Now Terraform uses this OCI credentials. If you want to configure them manually in Terraform, just uncomment the specific provider details.
-
-
-### Runtimes
-
-#### Google Cloud
-
-~5-6min
-
-real	5m52.189s
-user	0m16.896s
-sys	0m1.352s
-
-
-real    5m2.791s
-user    0m16.956s
-sys     0m1.511s
-
-
-
-#### Microsoft Azure
-
-~7,5min
-
-real    7m27.892s
-user    0m16.949s
-sys     0m1.437s
-
-
-#### Digital Ocean
-
-~5min
-
-real    4m45.802s
-user    0m16.590s
-sys     0m1.303s
-
-
-
-#### Amazon Web Services
-
-~11min
-
-real    10m51.788s
-user    0m18.162s
-sys     0m1.945s
-
-
-
-real    11m18.775s
-user    0m18.175s
-sys     0m2.082s
-
-
-#### Oracle Public Cloud
-
-real    6m23.939s
-user    0m20.157s
-sys     0m1.674s
-
-
-real    5m12.056s
-user    0m20.256s
-sys     0m1.676s
-
-
-### Help
-
-#### Terraform asks for Digital Ocean Token
-
-If you heave provided a Digital Ocean Token in your e.g. terraform.tfvars, but Terraform still keeps asking for the token, just export it as an environment variable:
-
-`export DIGITALOCEAN_TOKEN=mytoken`
 
 
 ### TODO
 
-* Apply useful RBAC defaults 
-* Split Terraform code into multiple modules
 * Combine multiple kubeconfig files into one
-* Allow K8s API access only from workstation IP
+* _(partly implemented):_ Allow K8s API access only from workstation IP 
 * Fix OCI destroy dependencies
