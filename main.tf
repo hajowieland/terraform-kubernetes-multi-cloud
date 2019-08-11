@@ -1,115 +1,125 @@
-## Create a random id as suffix for the cluster name
-resource "random_id" "cluster_name" {
-  byte_length = 6
-}
-
-## Get your workstation external IPv4 address:
-data "http" "workstation-external-ip" {
-  url = "http://ipv4.icanhazip.com"
-}
-
-locals {
-  workstation-external-cidr = "${chomp(data.http.workstation-external-ip.body)}/32"
-}
-
-
-## Amazon Web Services EKS
+## Amazon Web Services (EKS)
 module "amazon" {
-  source = "./amazon"
+  source  = "hajowieland/k8s/aws"
+  version = "1.0.2"
 
   enable_amazon = var.enable_amazon
 
-  workstation_ipv4 = local.workstation-external-cidr
-  random_cluster_suffix = random_id.cluster_name.hex
 }
 
-## Digital Ocean Kubernetes (GA)
+## Alicloud Managed Kubernetes Service (ACK)
+module "alibaba" {
+  source  = "hajowieland/k8s/alicloud"
+  version = "1.2.3"
+
+  enable_alibaba = var.enable_alibaba
+
+  ali_access_key = var.ali_access_key
+  ali_secret_key = var.ali_secret_key
+
+  ack_node_count = var.nodes
+}
+
+## Digital Ocean Kubernetes ("DOK")
 module "digitalocean" {
-  source = "./digitalocean"
+  source  = "hajowieland/k8s/digitalocean"
+  version = "1.0.3"
 
   enable_digitalocean = var.enable_digitalocean
 
-  workstation_ipv4 = local.workstation-external-cidr
-  random_cluster_suffix = random_id.cluster_name.hex
   do_token = var.do_token
+
+  do_k8s_nodepool_size = var.nodes
 }
 
-## Google Cloud Platform GKE
+## Google Cloud Platform (GKE)
 module "google" {
-  source = "./google"
+  source  = "hajowieland/k8s/google"
+  version = "1.1.0"
 
   enable_google = var.enable_google
 
   gcp_project = var.gcp_project
-  workstation_ipv4 = local.workstation-external-cidr
-  random_cluster_suffix = random_id.cluster_name.hex
+
+  gke_nodes = var.nodes
 }
 
-## Microsoft Azure AKS
+## Microsoft Azure (AKS)
 module "microsoft" {
-  source = "./microsoft"
+  source  = "hajowieland/k8s/azurerm"
+  version = "1.0.3"
 
   enable_microsoft = var.enable_microsoft
 
-  workstation_ipv4 = local.workstation-external-cidr
-  random_cluster_suffix = random_id.cluster_name.hex
-  az_tenant_id = var.az_tenant_id
-  az_client_id = var.az_client_id
+  az_tenant_id     = var.az_tenant_id
+  az_client_id     = var.az_client_id
   az_client_secret = var.az_client_secret
+
+  aks_nodes = var.nodes
 }
 
-## Oracle Cloud Infrastructure Container Service for Kubernetes
+## Oracle Cloud Infrastructure Container Service for Kubernetes (OKE)
 module "oracle" {
-  source = "./oracle"
+  source  = "hajowieland/k8s/oci"
+  version = "1.0.3"
 
   enable_oracle = var.enable_oracle
-  
-  workstation_ipv4 = local.workstation-external-cidr
-  random_cluster_suffix = random_id.cluster_name.hex
 
-  oci_user_ocid = var.oci_user_ocid
+  oci_user_ocid    = var.oci_user_ocid
   oci_tenancy_ocid = var.oci_tenancy_ocid
-  oci_fingerprint = var.oci_fingerprint
+  oci_fingerprint  = var.oci_fingerprint
 
+  oke_node_pool_size = var.nodes
 }
-
-## Alicloud Managed Kubernetes Service
 
 
 # Create kubeconfig files in main module directory
 # (will be created in submodule directories, too)
 
 resource "local_file" "kubeconfigaws" {
-  count = var.enable_amazon ? 1 : 0
-  content = module.amazon.kubeconfig_path_aws
+  count    = var.enable_amazon ? 1 : 0
+  content  = module.amazon.kubeconfig_path_aws
   filename = "${path.module}/kubeconfig_aws"
 
   depends_on = [module.amazon]
 }
 
+resource "local_file" "kubeconfigali" {
+  count    = var.enable_alibaba ? 1 : 0
+  content  = module.alibaba.kubeconfig_path_ali
+  filename = "${path.module}/kubeconfig_ali"
+
+  depends_on = [module.alibaba]
+}
+
+resource "local_file" "kubeconfigdo" {
+  count    = var.enable_digitalocean ? 1 : 0
+  content  = module.digitalocean.kubeconfig_path_do
+  filename = "${path.module}/kubeconfig_do"
+
+  depends_on = [module.alibaba]
+}
 
 resource "local_file" "kubeconfiggke" {
-  count = var.enable_google ? 1 : 0
-  content = module.google.kubeconfig_path_gke
+  count    = var.enable_google ? 1 : 0
+  content  = module.google.kubeconfig_path_gke
   filename = "${path.module}/kubeconfig_gke"
 
   depends_on = [module.google]
 }
 
-
 resource "local_file" "kubeconfigaks" {
-  count = var.enable_microsoft ? 1 : 0
-  content = module.microsoft.kubeconfig_path_aks
+  count    = var.enable_microsoft ? 1 : 0
+  content  = module.microsoft.kubeconfig_path_aks
   filename = "${path.module}/kubeconfig_aks"
 
   depends_on = [module.microsoft]
 }
 
 resource "local_file" "kubeconfigoci" {
-  count = var.enable_oracle ? 1 : 0
-  content = module.oracle.kubeconfig_path_oci
+  count    = var.enable_oracle ? 1 : 0
+  content  = module.oracle.kubeconfig_path_oci
   filename = "${path.module}/kubeconfig_oci"
 
   depends_on = [module.oracle]
 }
-
