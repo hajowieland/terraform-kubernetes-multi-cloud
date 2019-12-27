@@ -91,7 +91,7 @@ resource "local_file" "kubeconfigdo" {
   content  = module.digitalocean.kubeconfig_path_do
   filename = "${path.module}/kubeconfig_do"
 
-  depends_on = [module.alibaba]
+  depends_on = [module.digitalocean]
 }
 
 resource "local_file" "kubeconfiggke" {
